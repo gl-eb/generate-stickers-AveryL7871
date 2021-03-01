@@ -1,0 +1,1 @@
+# generate-stickers-AveryL7871
