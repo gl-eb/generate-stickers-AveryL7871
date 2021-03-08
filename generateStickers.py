@@ -1,4 +1,4 @@
-""" Version 2.0 dated 24th Feb 2021 by Gleb Ebert
+""" Version 2.1 dated March 3rd 2021 by Gleb Ebert
 
     This script reads sample names from a list, presents the user with
     a couple of options to modify the names and arranges them on a
@@ -31,7 +31,8 @@ while True:
     # get input file name from user and store its name in variable
     input_file = input(f"{color.BOLD + color.DARKCYAN}"
         "Enter the name of the txt file containing your strain/isolate names "
-        f"(one per line) followed by [ENTER] to confirm: {color.END}")
+        f"(one per line) followed by [ENTER] to confirm: "
+        f"{color.END}").casefold()
 
     # check if user input includes ".txt" suffix and add it if absent
     if not input_file.endswith(".txt"):
@@ -48,11 +49,11 @@ while True:
         # ask user whether he wants to type the file name again
         input_file_again = input(f"{color.BOLD + color.DARKCYAN}"
             "Do you want to type the file name again? "
-            f"Type \"yes\" or \"no\": \n{color.END}")
+            f"Type \"yes\" or \"no\": \n{color.END}").casefold()
 
         # if user wants to try again, restart loop
         # otherwise exit script
-        if input_file_again.casefold() == "yes".casefold():
+        if input_file_again == "yes":
             continue
         else:
             quit()
@@ -73,26 +74,22 @@ print(f"\n{color.BOLD + color.DARKCYAN}"
 
 # ask user whether he wants to type the file name again
 input_file_ok = input(f"{color.BOLD + color.DARKCYAN}Do you want to continue "
-    f"with these names? Type \"yes\" or \"no\": {color.END}")
+    f"with these names? Type \"yes\" or \"no\": {color.END}").casefold()
 
 # exit script if user says no, otherwise continue
-if input_file_ok.casefold() == "no".casefold():
+if input_file_ok == "no":
     quit()
 
 # query user on output file name
-output_file_name = input(f"\n{color.BOLD + color.DARKCYAN}"
-    f"\nType the name of your output file without suffix: {color.END}")
+output_file_name = input(f"\n{color.BOLD + color.DARKCYAN}Type the name of "
+    f"your output file without suffix: {color.END}").casefold()
 
 # check if user input includes ".txt" suffix and add it if not
 if not output_file_name.endswith(".txt"):
-   output_file_name += ".txt"
+    output_file_name += ".txt"
 
-# remove old output file and ignore error if it does not exist
-try:
-    output_file_path = Path(str(Path().absolute()) + "/" + output_file_name)
-    output_file_path.unlink()
-except (FileNotFoundError):
-    pass
+# set output file path
+output_file_path = Path(str(Path().absolute()) + "/" + output_file_name)
 
 #######################################################################
 # The following section deals with name suffixes
@@ -100,13 +97,13 @@ except (FileNotFoundError):
 
 # give user choice whether to add suffixes
 input_suffix_if = input(f"\n{color.BOLD + color.DARKCYAN}"
-    "\nDo you want to add suffixes to your sample names? "
-    f"Type \"yes\" or \"no\": {color.END}")
+    "Do you want to add suffixes to your sample names? "
+    f"Type \"yes\" or \"no\": {color.END}").casefold()
 
-if input_suffix_if.casefold() == "yes".casefold():
+if input_suffix_if == "yes":
     # print explanation of inner workings once before continuing
     print(f"\n{color.BOLD + color.DARKCYAN}"
-        "\n==========================================")
+        "==========================================")
     print("\nIn the following part of the script you will supply groups of "
         "suffixes (e.g. treatment names or replicate numbers) separated by "
         "spaces: \"CTRL TREAT1 TREAT2 TREAT3\". Each suffix will be combined "
@@ -124,7 +121,7 @@ if input_suffix_if.casefold() == "yes".casefold():
     while True:
         # ask for group of suffixes
         input_suffix_group = input(f"{color.BOLD + color.DARKCYAN}"
-            f"\nEnter a group of suffixes: {color.END}")
+            f"\nEnter a group of suffixes: {color.END}").casefold()
 
         # split input into list of words
         input_suffixes = input_suffix_group.split()
@@ -143,15 +140,21 @@ if input_suffix_if.casefold() == "yes".casefold():
         # ask user whether to run through another interation of the
         # suffix loop
         input_suffix_continue = input(f"\n{color.BOLD + color.DARKCYAN}"
-            "\nDo you want to add another group of suffixes? "
-            f"Type \"yes\" or \"no\": {color.END}")
+            "Do you want to add another group of suffixes? "
+            f"Type \"yes\" or \"no\": {color.END}").casefold()
 
         # if user answers anything other than yes break out of loop,
         # otherwise repeat
-        if input_suffix_continue.casefold() != "yes".casefold():
+        if input_suffix_continue != "yes":
             break
         else:
             continue
+    
+    # remove old output file and ignore error if it does not exist
+    try:
+        output_file_path.unlink()
+    except (FileNotFoundError):
+        pass
 
     # Create output file in append mode, loop through latest list with
     # modified names and write each one to a new line in the file.
@@ -167,28 +170,36 @@ else:
 
 # give user choice whether to print month and year
 input_date_if = input(f"\n{color.BOLD + color.DARKCYAN}"
-    "\nDo you want to print the current month and year on the stickers? "
-    f"Type \"yes\" or \"no\":  {color.END}")
+    "Do you want to print the current month and year on the stickers? "
+    f"Type \"yes\" or \"no\":  {color.END}").casefold()
 
 # give user choice whether to print month and year
 input_date_format = input(f"\n{color.BOLD + color.DARKCYAN}"
-    "\nDo you want the date to include the day in addition to month and year?"
-    f" Type \"yes\" or \"no\":  {color.END}")
+    "Do you want the date to include the day in addition to month and year?"
+    f" Type \"yes\" or \"no\":  {color.END}").casefold()
 
-if input_date_format.casefold() == "yes".casefold():
+if input_date_format == "yes":
     latex_date = "\t\t\\DTMtwodigits{##3}-\\DTMtwodigits{##2}-##1"
 else:
     latex_date = "\t\t\\DTMtwodigits{##2}-##1"
 
 # function that returns sticker content
 def return_sticker(x):
-    sticker = names_list_new[x].replace("_", "\_")
-    if len(sticker) >= 16:
+    sticker = names_list_new[x]
+    if len(sticker) >= 16: # if sticker too long, reduce font size
         sticker = "{\\ssmall " + sticker + "}"
-    if input_date_if.casefold() == "yes".casefold():
-        sticker = sticker + " \\mbox{\\DATE}"
-    else:
-        sticker = sticker + "\\newline"
+    if input_date_if == "yes": # add date if specified
+        # if sticker is short, put date on new line by ending the paragraph
+        if (len(sticker) < 10 and input_date_format == "yes"):
+            sticker = sticker + "\\par\\DATE"
+        elif (len(sticker) < 13 and input_date_if == "yes"):
+            sticker = sticker + "\\par\\DATE"
+        else:
+            sticker = sticker + " \\DATE"
+    else: # add newline to preserve table formatting if no date is added
+        sticker = sticker + "\\par"
+    # escape underscores last to not interfere with name length
+    sticker = sticker.replace("_", "\_")
     return sticker
 
 # set output file to .tex
@@ -211,7 +222,8 @@ latex_pages = (names_number_new // 189) + 1
 
 # save latex document preamble in variable
 latex_preamble = \
-"""\\documentclass[a4paper]{article} % document definition
+"""\\batchmode % disable command line output
+\\documentclass[a4paper]{article} % document definition
 % used to adjust page margins to 3.5mm
 \\usepackage[top=1.2cm, bottom=1.2cm, left=0.5cm, right=0.5cm]{geometry}
 % used for table with columns of a defined width
@@ -246,7 +258,6 @@ f"{latex_date}"\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \\begin{document}
-\\batchmode % disable command line output
 
 % scriptsize/ssmall, bold and sans-serif font throughout the entire document
 \\scriptsize \\bfseries \\sffamily
