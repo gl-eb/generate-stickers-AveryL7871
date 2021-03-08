@@ -27,6 +27,7 @@ This script reads sample names from a txt file (one name per line) and arranges 
 - Changed case handling of user input
 - LaTeX formatting: Took `\DATE` command out of `\mbox` as it was unnecessary and lead to extra whitespaces under certain circumstances
 - LaTeX formatting: switched to `\par` from `\newline` to avoid horizontal space added by the latter command
+- expanded How To Use section, added changelog and some other small changes to README
 - Added .DS_Store file to gitignore
 
 ### v2.0 (2021-02-24)
