@@ -20,6 +20,11 @@ This script reads sample names from a txt file (one name per line) and arranges 
 4. Follow the instructions that appear in the console.
 
 ## Changelog
+### v2.2 (2021-04-15)
+- Fixed an issue where sample names longer than 20 characters would break the layout
+- Made further changes to case handling of user input and fixed samples names as well as file names being converted to lower case
+- If user does not want to include the date on the sticker, they are not asked further questions about date formatting anymore
+
 ### v2.1 (2021-03-08)
 - Changed location of input file deletion command as it lead to its unwanted loss under certain circumstances and moved definition of file path to accommodate that change
 - Added logic to put date on new line if sticker name is short and moved special character escape after string length is used for formatting

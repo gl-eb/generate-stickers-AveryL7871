@@ -32,7 +32,7 @@ while True:
     input_file = input(f"{color.BOLD + color.DARKCYAN}"
         "Enter the name of the txt file containing your strain/isolate names "
         f"(one per line) followed by [ENTER] to confirm: "
-        f"{color.END}").casefold()
+        f"{color.END}")
 
     # check if user input includes ".txt" suffix and add it if absent
     if not input_file.endswith(".txt"):
@@ -82,10 +82,10 @@ if input_file_ok == "no":
 
 # query user on output file name
 output_file_name = input(f"\n{color.BOLD + color.DARKCYAN}Type the name of "
-    f"your output file without suffix: {color.END}").casefold()
+    f"your output file without suffix: {color.END}")
 
 # check if user input includes ".txt" suffix and add it if not
-if not output_file_name.endswith(".txt"):
+if not output_file_name.casefold().endswith(".txt"):
     output_file_name += ".txt"
 
 # set output file path
@@ -121,7 +121,7 @@ if input_suffix_if == "yes":
     while True:
         # ask for group of suffixes
         input_suffix_group = input(f"{color.BOLD + color.DARKCYAN}"
-            f"\nEnter a group of suffixes: {color.END}").casefold()
+            f"\nEnter a group of suffixes: {color.END}")
 
         # split input into list of words
         input_suffixes = input_suffix_group.split()
@@ -149,7 +149,7 @@ if input_suffix_if == "yes":
             break
         else:
             continue
-    
+
     # remove old output file and ignore error if it does not exist
     try:
         output_file_path.unlink()
@@ -168,25 +168,32 @@ else:
 # logic and parameters for LaTeX typesetting
 #######################################################################
 
+# set variable for date as empty
+latex_date = ""
+
 # give user choice whether to print month and year
 input_date_if = input(f"\n{color.BOLD + color.DARKCYAN}"
     "Do you want to print the current month and year on the stickers? "
     f"Type \"yes\" or \"no\":  {color.END}").casefold()
 
-# give user choice whether to print month and year
-input_date_format = input(f"\n{color.BOLD + color.DARKCYAN}"
-    "Do you want the date to include the day in addition to month and year?"
-    f" Type \"yes\" or \"no\":  {color.END}").casefold()
+if input_date_if == "yes":
+    # give user choice whether to print month and year
+    input_date_format = input(f"\n{color.BOLD + color.DARKCYAN}"
+        "Do you want the date to include the day in addition to month and year?"
+        f" Type \"yes\" or \"no\":  {color.END}").casefold()
 
-if input_date_format == "yes":
-    latex_date = "\t\t\\DTMtwodigits{##3}-\\DTMtwodigits{##2}-##1"
-else:
-    latex_date = "\t\t\\DTMtwodigits{##2}-##1"
+    # set latex date to format set by user
+    if input_date_format == "yes":
+        latex_date = "\t\t\\DTMtwodigits{##3}-\\DTMtwodigits{##2}-##1"
+    else:
+        latex_date = "\t\t\\DTMtwodigits{##2}-##1"
 
 # function that returns sticker content
 def return_sticker(x):
     sticker = names_list_new[x]
-    if len(sticker) >= 16: # if sticker too long, reduce font size
+    if len(sticker) > 20: # if text is very long, reduce font size
+        sticker = "{\\tiny " + sticker + "}"
+    elif len(sticker) > 15: # if text is not too long, reduce font size a bit
         sticker = "{\\ssmall " + sticker + "}"
     if input_date_if == "yes": # add date if specified
         # if sticker is short, put date on new line by ending the paragraph
@@ -196,7 +203,7 @@ def return_sticker(x):
             sticker = sticker + "\\par\\DATE"
         else:
             sticker = sticker + " \\DATE"
-    else: # add newline to preserve table formatting if no date is added
+    else: # add newline to preserve table formatting w/o date
         sticker = sticker + "\\par"
     # escape underscores last to not interfere with name length
     sticker = sticker.replace("_", "\_")
@@ -269,21 +276,21 @@ f"{latex_date}"\
 # create .tex file and write to it
 with open(latex_file_path, "a+") as latex_file:
     latex_file.write(latex_preamble) # write preamble once
-    
+
     # variable to track the current position in the list of names
     n = 0
-    
+
     # loop through pages of final sticker layout
     for page_number in range(latex_pages):
         # start each page with the opening of the table environment
         latex_file.write(f"% Page {page_number+1}\n"
             "\\begin{tabularx}{\linewidth}{@{}*{7}{Y}@{}}\n")
-        
+
         # loop through each line of and write sticker contents to it
         for line_number in range(27):
             # add tab character at beginning of line
             latex_file.write("\t")
-            # 
+            #
             for l in range (7):
                 # if names to be printed still left, do so
                 if (n < (names_number_new-1) and l < 6):
@@ -311,5 +318,5 @@ with open(latex_file_path, "a+") as latex_file:
 
 # call pdflatex to typeset .tex file # text = FALSE
 subprocess.run(["pdflatex", latex_file_path], stdout=subprocess.DEVNULL)
-# open resulting pdf file 
+# open resulting pdf file
 subprocess.run(["open", latex_file_path.with_suffix(".pdf")])
