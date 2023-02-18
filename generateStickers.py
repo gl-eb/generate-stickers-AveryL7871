@@ -166,8 +166,9 @@ if input_suffix_if == "yes":
     with open(output_file_path, "a+") as sampleFile:
         for item in names_list_new:
             sampleFile.write(f"{item}\n")
-else:
-    names_list_new = names_list
+
+    # replace old list of names with new one
+    names_list = names_list_new
 
 #######################################################################
 # logic and parameters for LaTeX typesetting
@@ -199,7 +200,7 @@ def return_sticker(x):
     if x >= len(names_list_new):
         sticker = "\\phantom{empty sticker}\\par"
     else:
-        sticker = names_list_new[x]
+        sticker = names_list[x]
         if len(sticker) > 20: # if text is very long, reduce font size
             sticker = "{\\tiny " + sticker + "}"
         elif len(sticker) > 15: # if text is long, reduce font size less
@@ -230,8 +231,8 @@ except (FileNotFoundError):
 
 # Round number of pages needed to fit all stickers up to nearest
 # whole page.
-names_number_new = len(names_list_new)
-latex_pages = (names_number_new // 189) + 1
+names_number = len(names_list)
+latex_pages = (names_number // 189) + 1
 
 #######################################################################
 # typeset LaTeX file
@@ -319,7 +320,7 @@ with open(latex_file_path, "a+") as latex_file:
             else:
                 latex_file.write(" \\addlinespace[0.470878cm]\n")
             # if all names were printed, break loop
-            if (n >= names_number_new):
+            if (n >= names_number):
                 break
         # close table environment at the end of the page
         latex_file.write("\\end{tabularx}\n\n")
