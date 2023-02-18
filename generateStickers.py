@@ -6,8 +6,9 @@
     L7871 labels
 """
 
-from pathlib import Path # we use this for file path operations
-import subprocess # this is for passing commands to unix shell
+from pathlib import Path # file path operations
+import re # regular expressions
+import subprocess # passing commands to unix shell
 
 # create class with objects to format console output
 class color:
@@ -67,10 +68,14 @@ with open(input_file, "r") as file:
 
 names_number = len(names_list_original) # get number of names
 
+# remove placeholders for printing sample names
+names_list_filtered = [line for line in names_list_original if not re.match("\.", line)]
+names_number_filtered = len(names_list_filtered)
+
 # print some of the sample names
 print(f"\n{color.BOLD + color.DARKCYAN}"
-    f"Your file contains {names_number} names:\n{names_list_original[0]}, "
-    f"{names_list_original[1]} ... {names_list_original[-1]}{color.END}")
+    f"Your file contains {names_number_filtered} names:\n{names_list_filtered[0]}, "
+    f"{names_list_filtered[1]} ... {names_list_filtered[-1]}{color.END}")
 
 # ask user whether he wants to type the file name again
 input_file_ok = input(f"{color.BOLD + color.DARKCYAN}Do you want to continue "

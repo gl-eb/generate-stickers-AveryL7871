@@ -25,6 +25,7 @@ This script reads sample names from a txt file (one name per line) and arranges 
 
 ### v2.3 (2023-mm-dd)
 
+- Remove placeholder lines from the sample names that are printed to the command line. This is just a stop-gap solution until skipping stickers is implemented
 - Fix bug which caused empty lines in the sample names file to crash the script
 
 ### v2.2 (2021-04-15)
