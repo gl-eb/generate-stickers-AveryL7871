@@ -62,8 +62,7 @@ while True:
         break
 
 # open file in read mode, read lines, filter out empty ones and convert to list
-
-with open(input_file, "r") as file:
+with open(input_file, "r", encoding='unicode_escape') as file:
     names_list = list(filter(None, (line.rstrip() for line in file)))
 
 names_number = len(names_list) # get number of names
