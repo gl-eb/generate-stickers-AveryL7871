@@ -295,7 +295,7 @@ with open(latex_file_path, "a+") as latex_file:
     for page_number in range(latex_pages):
         # start each page with the opening of the table environment
         latex_file.write(f"% Page {page_number+1}\n"
-            "\\begin{tabularx}{\linewidth}{@{}*{7}{Y}@{}}\n")
+            "\\begin{tabularx}{\\linewidth}{@{}*{7}{Y}@{}}\n")
 
         # loop through each line of and write sticker contents to it
         for line_number in range(27):
