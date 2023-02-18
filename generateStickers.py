@@ -64,20 +64,21 @@ while True:
 # open file in read mode, read lines, filter out empty ones and convert to list
 
 with open(input_file, "r") as file:
-    names_list_original = list(filter(None, (line.rstrip() for line in file)))
+    names_list = list(filter(None, (line.rstrip() for line in file)))
 
-names_number = len(names_list_original) # get number of names
+names_number = len(names_list) # get number of names
 
 # remove placeholders for printing sample names
-names_list_filtered = [line for line in names_list_original if not re.match("\.", line)]
+names_list_filtered = [line for line in names_list if not re.match("\.", line)]
 names_number_filtered = len(names_list_filtered)
 
 # print some of the sample names
 print(f"\n{color.BOLD + color.DARKCYAN}"
-    f"Your file contains {names_number_filtered} names:\n{names_list_filtered[0]}, "
-    f"{names_list_filtered[1]} ... {names_list_filtered[-1]}{color.END}")
+    f"Your file contains {names_number_filtered} names:\n"
+    f"{names_list_filtered[0]}, {names_list_filtered[1]} ... "
+    f"{names_list_filtered[-1]}{color.END}")
 
-# ask user whether he wants to type the file name again
+# ask user whether they want to continue with the sample names
 input_file_ok = input(f"{color.BOLD + color.DARKCYAN}Do you want to continue "
     f"with these names? Type \"yes\" or \"no\": {color.END}").casefold()
 
@@ -119,7 +120,7 @@ if input_suffix_if == "yes":
         "Strain1-TREAT1-Replicate2 ...).{color.END}")
 
     # initiate list with names to be modified
-    names_list_old = names_list_original
+    names_list_old = names_list
 
     # Keep asking for suffixes and adding them to sample names
     # until user stops loop.
@@ -167,7 +168,7 @@ if input_suffix_if == "yes":
         for item in names_list_new:
             sampleFile.write(f"{item}\n")
 else:
-    names_list_new = names_list_original
+    names_list_new = names_list
 
 #######################################################################
 # logic and parameters for LaTeX typesetting
