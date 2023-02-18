@@ -23,7 +23,7 @@ This script reads sample names from a txt file (one name per line) and arranges 
 
 ## Changelog
 
-### v2.3 (2023-mm-dd)
+### Develop
 
 - Print empty sticker if index is out of bound. This ensures that table rows are filled up and fixes a bug that occured when the number of stickers was not a multiple of 7
 - Remove placeholder lines from the sample names that are printed to the command line. This is just a stop-gap solution until skipping stickers is implemented
