@@ -60,10 +60,10 @@ while True:
     else:
         break
 
-# open file in read mode
-with open(input_file, "r") as file_handle:
-    # convert file contents into a list
-    names_list_original = file_handle.read().splitlines()
+# open file in read mode, read lines, filter out empty ones and convert to list
+
+with open(input_file, "r") as file:
+    names_list_original = list(filter(None, (line.rstrip() for line in file)))
 
 names_number = len(names_list_original) # get number of names
 

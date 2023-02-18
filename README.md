@@ -20,6 +20,11 @@ This script reads sample names from a txt file (one name per line) and arranges 
 4. Follow the instructions that appear in the console.
 
 ## Changelog
+
+### v2.3 (2023-mm-dd)
+
+- Fix bug which caused empty lines in the sample names file to crash the script
+
 ### v2.2 (2021-04-15)
 - Fixed an issue where sample names longer than 20 characters would break the layout
 - Made further changes to case handling of user input and fixed samples names as well as file names being converted to lower case
