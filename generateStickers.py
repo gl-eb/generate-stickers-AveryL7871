@@ -196,23 +196,28 @@ if input_date_if == "yes":
 
 # function that returns sticker content
 def return_sticker(x):
-    sticker = names_list_new[x]
-    if len(sticker) > 20: # if text is very long, reduce font size
-        sticker = "{\\tiny " + sticker + "}"
-    elif len(sticker) > 15: # if text is not too long, reduce font size a bit
-        sticker = "{\\ssmall " + sticker + "}"
-    if input_date_if == "yes": # add date if specified
-        # if sticker is short, put date on new line by ending the paragraph
-        if (len(sticker) < 10 and input_date_format == "yes"):
-            sticker = sticker + "\\par\\DATE"
-        elif (len(sticker) < 13 and input_date_if == "yes"):
-            sticker = sticker + "\\par\\DATE"
-        else:
-            sticker = sticker + " \\DATE"
-    else: # add newline to preserve table formatting w/o date
-        sticker = sticker + "\\par"
-    # escape underscores last to not interfere with name length
-    sticker = sticker.replace("_", "\_")
+    # return empty sticker
+    if x >= len(names_list_new):
+        sticker = "\\phantom{empty sticker}\\par"
+    else:
+        sticker = names_list_new[x]
+        if len(sticker) > 20: # if text is very long, reduce font size
+            sticker = "{\\tiny " + sticker + "}"
+        elif len(sticker) > 15: # if text is long, reduce font size less
+            sticker = "{\\ssmall " + sticker + "}"
+        if input_date_if == "yes": # add date if specified
+            # if sticker is short, put date on new line by ending the paragraph
+            if (len(sticker) < 10 and input_date_format == "yes"):
+                sticker = sticker + "\\par\\DATE"
+            elif (len(sticker) < 13 and input_date_if == "yes"):
+                sticker = sticker + "\\par\\DATE"
+            else:
+                sticker = sticker + " \\DATE"
+        else: # add newline to preserve table formatting w/o date
+            sticker = sticker + "\\par"
+        # escape underscores last to not interfere with name length
+        sticker = sticker.replace("_", "\_")
+
     return sticker
 
 # set output file to .tex
@@ -297,11 +302,11 @@ with open(latex_file_path, "a+") as latex_file:
             # add tab character at beginning of line
             latex_file.write("\t")
             #
-            for l in range (7):
-                # if names to be printed still left, do so
-                if (n < (names_number_new-1) and l < 6):
+            for position in range(7):
+                # if unprinted sample names left, do so
+                if (position < 6):
                     latex_file.write(f"{return_sticker(n)} & ")
-                elif (n == (names_number_new-1) or l == 6):
+                elif (position == 6):
                     latex_file.write(f"{return_sticker(n)}")
                 else:
                     break
@@ -315,7 +320,7 @@ with open(latex_file_path, "a+") as latex_file:
             else:
                 latex_file.write(" \\addlinespace[0.470878cm]\n")
             # if all names were printed, break loop
-            if (n == names_number_new):
+            if (n >= names_number_new):
                 break
         # close table environment at the end of the page
         latex_file.write("\\end{tabularx}\n\n")
