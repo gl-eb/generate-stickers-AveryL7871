@@ -67,15 +67,11 @@ with open(input_file, "r", encoding='unicode_escape') as file:
 
 names_number = len(names_list) # get number of names
 
-# remove placeholders for printing sample names
-names_list_filtered = [line for line in names_list if not re.match("\.", line)]
-names_number_filtered = len(names_list_filtered)
-
 # print some of the sample names
 print(f"\n{color.BOLD + color.DARKCYAN}"
-    f"Your file contains {names_number_filtered} names:\n"
-    f"{names_list_filtered[0]}, {names_list_filtered[1]} ... "
-    f"{names_list_filtered[-1]}{color.END}")
+    f"Your file contains {names_number} names:\n"
+    f"{names_list[0]}, {names_list[1]} ... "
+    f"{names_list[-1]}{color.END}")
 
 # ask user whether they want to continue with the sample names
 input_continue = input(f"{color.BOLD + color.DARKCYAN}Do you want to continue "

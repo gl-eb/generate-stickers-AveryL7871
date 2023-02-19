@@ -25,7 +25,6 @@ This script reads sample names from a txt file (one name per line) and arranges 
 
 - Allow user to print empty stickers at the beginning of the sheets. This is useful if a number of stickers from a sheet have already been used
 - Print empty sticker if index is out of bound. This ensures that table rows are filled up and fixes a bug that occured when the number of stickers was not a multiple of 7
-- Remove placeholder lines from the sample names that are printed to the command line. This is just a stop-gap solution until skipping stickers is implemented
 - Moved bigger chunks of LaTeX into their own files located in the `resources` folder
 - Fix bug which caused empty lines in the sample names file to crash the script
 - Allow reading lines from file with non-unicode encoding
