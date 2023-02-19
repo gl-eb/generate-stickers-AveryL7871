@@ -6,7 +6,7 @@
     L7871 labels
 """
 
-from pathlib import Path # file path operations
+from pathlib import Path, PurePath # file path operations
 import re # regular expressions
 import subprocess # passing commands to unix shell
 
@@ -202,11 +202,16 @@ if input_date == "yes":
         "Do you want the date to include the day in addition to month and year?"
         f" Type \"yes\" or \"no\": {color.END}").casefold()
 
-    # set latex date to format set by user
-    if input_date_format == "yes":
-        latex_date = "\t\t\\DTMtwodigits{##3}-\\DTMtwodigits{##2}-##1"
-    else:
-        latex_date = "\t\t\\DTMtwodigits{##2}-##1"
+    # redefine date format to be in the yyyy-mm format
+    if input_date_format != "yes":
+        latex_date = \
+            """% define new date style
+            \\DTMnewdatestyle{mydate}{
+                \\renewcommand{\\DTMdisplaydate}[4]{##1-\DTMtwodigits{##2}}
+                \\renewcommand{\\DTMDisplaydate}{\\DTMdisplaydate}
+            }
+            \\DTMsetdatestyle{mydate} % set new datestyle as default
+             """
 
 # function that returns sticker content
 def return_sticker(x):
@@ -252,55 +257,26 @@ latex_pages = (names_number // 189) + 1
 # typeset LaTeX file
 #######################################################################
 
-# save latex document preamble in variable
-latex_preamble = \
-"""\\batchmode % disable command line output
-\\documentclass[a4paper]{article} % document definition
-% used to adjust page margins to 3.5mm
-\\usepackage[top=1.2cm, bottom=1.2cm, left=0.5cm, right=0.5cm]{geometry}
-% used for table with columns of a defined width
-\\usepackage{tabularx}
-% used to add white space after column rows
-\\usepackage{booktabs}
-% to format date
-\\usepackage{datetime2}
-% for more font sizes
-\\usepackage{moresize}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\\pagestyle{empty} % no page numbers
-\\setlength{\\parindent}{0pt} % set paragraph indent to zero
-
-% define new date style
-\\DTMnewdatestyle{mydate}{%
-    \\renewcommand{\\DTMdisplaydate}[4]{%
-"""\
-f"{latex_date}"\
-"""
-    }%
-    \\renewcommand{\\DTMDisplaydate}{\\DTMdisplaydate}%
-}
-\\DTMsetdatestyle{mydate} % set new datestyle as default
-\\newcommand{\\DATE}{\\today} % create alias for current date command
-
-% defines custom column type for table
-\\newcolumntype{Y}{>{\\centering\\arraybackslash}X}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\\begin{document}
-
-% scriptsize/ssmall, bold and sans-serif font throughout the entire document
-\\scriptsize \\bfseries \\sffamily
-% table definition: spans the entire page in (text)width
-% @{} removes white space before first and after last row
-% *{7}{Y} defines seven columns of equal width with text centering
-% sample name and date rows alternate with different amounts of spacing\n\n"""
+# set paths to files
+dir_avery = PurePath(__file__).parent
+path_preamble = Path(dir_avery, "resources", "preamble.tex")
+path_before_body = Path(dir_avery, "resources", "before_body.tex")
 
 # create .tex file and write to it
-with open(latex_file_path, "a+") as latex_file:
-    latex_file.write(latex_preamble) # write preamble once
+with open(path_latex, "a+") as file_output:
+    # write contents of preamble file to output file
+    with open(path_preamble, "r") as file_preamble:
+        for line in file_preamble:
+            file_output.write(line)
+
+    # write date redefinition command to output file
+    # this might be an empty string if the date does not need to be redefined
+    file_output.write(latex_date)
+
+    # write contents of before_header file to output file
+    with open(path_before_body, "r") as file_before_body:
+        for line in file_before_body:
+            file_output.write(line)
 
     # variable to track the current position in the list of names
     n = 0
