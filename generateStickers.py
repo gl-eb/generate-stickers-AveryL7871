@@ -174,6 +174,20 @@ if input_suffix_if == "yes":
 # logic and parameters for LaTeX typesetting
 #######################################################################
 
+# ask user how many stickers they want to skip (default: 0)
+skip_stickers = input(f"\n{color.BOLD + color.DARKCYAN}"
+    f"How many stickers do you want to skip, e.g. because they were already"
+    f" used before (default: 0){color.END}").casefold()
+
+# deal with empty or non-numeric answers
+if skip_stickers == "":
+    skip_stickers = 0
+else:
+    skip_stickers = int(skip_stickers)
+
+# prepend empty items to list of names for each sticker to skip
+names_list = ([None] * skip_stickers) + names_list
+
 # set variable for date as empty
 latex_date = ""
 
@@ -197,7 +211,7 @@ if input_date_if == "yes":
 # function that returns sticker content
 def return_sticker(x):
     # return empty sticker
-    if x >= len(names_list_new):
+    if (x >= len(names_list) or names_list[x] is None):
         sticker = "\\phantom{empty sticker}\\par"
     else:
         sticker = names_list[x]
