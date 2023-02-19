@@ -5,9 +5,8 @@ This script reads sample names from a txt file (one name per line) and arranges 
 ## Requirements
 
 - A UNIX type **command-line interface** (e.g. Terminal on macOS)
-- **Python 3.5** or higher (confirmed to work on 3.8.5 and 3.9+)
-- **LaTeX** (e.g. TeX Live/MacTeX for macOS or any other TeX distribution)\
-  if you are using a small TeX distribution such as BasicTeX, make sure you have the following packages installed:
+- **Python 3.5** or higher (confirmed to work on 3.8, 3.9, 3.11)
+- **LaTeX** (e.g. TeX Live/MacTeX for macOS or any other TeX distribution). If you are using a small TeX distribution such as BasicTeX, make sure you have the following packages installed:
   - tabularx
   - booktabs
   - datetime2
@@ -17,8 +16,7 @@ This script reads sample names from a txt file (one name per line) and arranges 
 
 1. Open your command-line interface of choice
 2. Navigate to the folder that you want the output pdf to be in using the command `cd path/to/your/folder`
-3. Run the script with `python3 generateStickers.py`\
-(replace `generateStickers.py` with `path/to/script/generateStickers.py` if the script is not located in the same folder)
+3. Run the script with `python3 generateStickers.py` (replace `generateStickers.py` with `path/to/script/generateStickers.py` if the script is not located in the same folder)
 4. Follow the instructions that appear in the console.
 
 ## Changelog
@@ -30,6 +28,7 @@ This script reads sample names from a txt file (one name per line) and arranges 
 - Remove placeholder lines from the sample names that are printed to the command line. This is just a stop-gap solution until skipping stickers is implemented
 - Fix bug which caused empty lines in the sample names file to crash the script
 - Allow reading lines from file with non-unicode encoding
+- Did some code refactoring and cleaning
 
 ### v2.2 (2021-04-15)
 

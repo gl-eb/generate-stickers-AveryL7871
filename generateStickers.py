@@ -48,13 +48,13 @@ while True:
               f"'cd /Path/to/your/directory' then hit [ENTER]{color.END}")
 
         # ask user whether he wants to type the file name again
-        input_file_again = input(f"{color.BOLD + color.DARKCYAN}"
+        retry = input(f"{color.BOLD + color.DARKCYAN}"
             "Do you want to type the file name again? "
             f"Type \"yes\" or \"no\": \n{color.END}").casefold()
 
         # if user wants to try again, restart loop
         # otherwise exit script
-        if input_file_again == "yes":
+        if retry == "yes":
             continue
         else:
             quit()
@@ -78,34 +78,34 @@ print(f"\n{color.BOLD + color.DARKCYAN}"
     f"{names_list_filtered[-1]}{color.END}")
 
 # ask user whether they want to continue with the sample names
-input_file_ok = input(f"{color.BOLD + color.DARKCYAN}Do you want to continue "
+input_continue = input(f"{color.BOLD + color.DARKCYAN}Do you want to continue "
     f"with these names? Type \"yes\" or \"no\": {color.END}").casefold()
 
 # exit script if user says no, otherwise continue
-if input_file_ok == "no":
+if input_continue == "no":
     quit()
 
 # query user on output file name
-output_file_name = input(f"\n{color.BOLD + color.DARKCYAN}Type the name of "
+name_output = input(f"\n{color.BOLD + color.DARKCYAN}Type the name of "
     f"your output file without suffix: {color.END}")
 
 # check if user input includes ".txt" suffix and add it if not
-if not output_file_name.casefold().endswith(".txt"):
-    output_file_name += ".txt"
+if not name_output.casefold().endswith(".txt"):
+    name_output += ".txt"
 
 # set output file path
-output_file_path = Path(str(Path().absolute()) + "/" + output_file_name)
+path_output = Path(str(Path().absolute()) + "/" + name_output)
 
 #######################################################################
 # The following section deals with name suffixes
 #######################################################################
 
 # give user choice whether to add suffixes
-input_suffix_if = input(f"\n{color.BOLD + color.DARKCYAN}"
+input_suffix = input(f"\n{color.BOLD + color.DARKCYAN}"
     "Do you want to add suffixes to your sample names? "
     f"Type \"yes\" or \"no\": {color.END}").casefold()
 
-if input_suffix_if == "yes":
+if input_suffix == "yes":
     # print explanation of inner workings once before continuing
     print(f"\n{color.BOLD + color.DARKCYAN}"
         "==========================================")
@@ -157,15 +157,15 @@ if input_suffix_if == "yes":
 
     # remove old output file and ignore error if it does not exist
     try:
-        output_file_path.unlink()
+        path_output.unlink()
     except (FileNotFoundError):
         pass
 
     # Create output file in append mode, loop through latest list with
     # modified names and write each one to a new line in the file.
-    with open(output_file_path, "a+") as sampleFile:
+    with open(path_output, "a+") as file_samples:
         for item in names_list_new:
-            sampleFile.write(f"{item}\n")
+            file_samples.write(f"{item}\n")
 
     # replace old list of names with new one
     names_list = names_list_new
@@ -175,32 +175,32 @@ if input_suffix_if == "yes":
 #######################################################################
 
 # ask user how many stickers they want to skip (default: 0)
-skip_stickers = input(f"\n{color.BOLD + color.DARKCYAN}"
+input_skip = input(f"\n{color.BOLD + color.DARKCYAN}"
     f"How many stickers do you want to skip, e.g. because they were already"
-    f" used before (default: 0){color.END}").casefold()
+    f" used before (default: 0): {color.END}").casefold()
 
 # deal with empty or non-numeric answers
-if skip_stickers == "":
-    skip_stickers = 0
+if input_skip == "":
+    input_skip = 0
 else:
-    skip_stickers = int(skip_stickers)
+    input_skip = int(input_skip)
 
 # prepend empty items to list of names for each sticker to skip
-names_list = ([None] * skip_stickers) + names_list
+names_list = ([None] * input_skip) + names_list
 
 # set variable for date as empty
 latex_date = ""
 
 # give user choice whether to print month and year
-input_date_if = input(f"\n{color.BOLD + color.DARKCYAN}"
+input_date = input(f"\n{color.BOLD + color.DARKCYAN}"
     "Do you want to print the current month and year on the stickers? "
-    f"Type \"yes\" or \"no\":  {color.END}").casefold()
+    f"Type \"yes\" or \"no\": {color.END}").casefold()
 
-if input_date_if == "yes":
+if input_date == "yes":
     # give user choice whether to print month and year
     input_date_format = input(f"\n{color.BOLD + color.DARKCYAN}"
         "Do you want the date to include the day in addition to month and year?"
-        f" Type \"yes\" or \"no\":  {color.END}").casefold()
+        f" Type \"yes\" or \"no\": {color.END}").casefold()
 
     # set latex date to format set by user
     if input_date_format == "yes":
@@ -219,11 +219,11 @@ def return_sticker(x):
             sticker = "{\\tiny " + sticker + "}"
         elif len(sticker) > 15: # if text is long, reduce font size less
             sticker = "{\\ssmall " + sticker + "}"
-        if input_date_if == "yes": # add date if specified
+        if input_date == "yes": # add date if specified
             # if sticker is short, put date on new line by ending the paragraph
             if (len(sticker) < 10 and input_date_format == "yes"):
                 sticker = sticker + "\\par\\DATE"
-            elif (len(sticker) < 13 and input_date_if == "yes"):
+            elif (len(sticker) < 13 and input_date == "yes"):
                 sticker = sticker + "\\par\\DATE"
             else:
                 sticker = sticker + " \\DATE"
@@ -235,11 +235,11 @@ def return_sticker(x):
     return sticker
 
 # set output file to .tex
-latex_file_path = output_file_path.with_suffix(".tex")
+path_latex = path_output.with_suffix(".tex")
 
 # remove old output file and ignore error if file does not exist
 try:
-    latex_file_path.unlink()
+    path_latex.unlink()
 except (FileNotFoundError):
     pass
 
@@ -308,40 +308,40 @@ with open(latex_file_path, "a+") as latex_file:
     # loop through pages of final sticker layout
     for page_number in range(latex_pages):
         # start each page with the opening of the table environment
-        latex_file.write(f"% Page {page_number+1}\n"
+        file_output.write(f"% Page {page_number+1}\n"
             "\\begin{tabularx}{\\linewidth}{@{}*{7}{Y}@{}}\n")
 
         # loop through each line of and write sticker contents to it
         for line_number in range(27):
             # add tab character at beginning of line
-            latex_file.write("\t")
+            file_output.write("\t")
             #
             for position in range(7):
                 # if unprinted sample names left, do so
                 if (position < 6):
-                    latex_file.write(f"{return_sticker(n)} & ")
+                    file_output.write(f"{return_sticker(n)} & ")
                 elif (position == 6):
-                    latex_file.write(f"{return_sticker(n)}")
+                    file_output.write(f"{return_sticker(n)}")
                 else:
                     break
                 n += 1
             # end line after 7 stickers
-            latex_file.write(" \\\\")
+            file_output.write(" \\\\")
             # if line is the last one of the page
             if (line_number == 26):
-                latex_file.write(" \\addlinespace[0.05cm]\n")
+                file_output.write(" \\addlinespace[0.05cm]\n")
             # if next line is not the last line of the page
             else:
-                latex_file.write(" \\addlinespace[0.470878cm]\n")
+                file_output.write(" \\addlinespace[0.470878cm]\n")
             # if all names were printed, break loop
             if (n >= names_number):
                 break
         # close table environment at the end of the page
-        latex_file.write("\\end{tabularx}\n\n")
+        file_output.write("\\end{tabularx}\n\n")
     # reenable command line output and end document
-    latex_file.write("\\scrollmode\n\\end{document}")
+    file_output.write("\\scrollmode\n\\end{document}")
 
 # call pdflatex to typeset .tex file # text = FALSE
-subprocess.run(["pdflatex", latex_file_path], stdout=subprocess.DEVNULL)
+subprocess.run(["pdflatex", path_latex], stdout=subprocess.DEVNULL)
 # open resulting pdf file
-subprocess.run(["open", latex_file_path.with_suffix(".pdf")])
+subprocess.run(["open", path_latex.with_suffix(".pdf")])
