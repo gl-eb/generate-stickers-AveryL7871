@@ -203,7 +203,7 @@ if input_date == "yes":
         latex_date = \
             """% define new date style
             \\DTMnewdatestyle{mydate}{
-                \\renewcommand{\\DTMdisplaydate}[4]{##1-\DTMtwodigits{##2}}
+                \\renewcommand{\\DTMdisplaydate}[4]{##1-\\DTMtwodigits{##2}}
                 \\renewcommand{\\DTMDisplaydate}{\\DTMdisplaydate}
             }
             \\DTMsetdatestyle{mydate} % set new datestyle as default
@@ -231,7 +231,7 @@ def return_sticker(x):
         else: # add newline to preserve table formatting w/o date
             sticker = sticker + "\\par"
         # escape underscores last to not interfere with name length
-        sticker = sticker.replace("_", "\_")
+        sticker = sticker.replace("_", "\\_")
 
     return sticker
 
