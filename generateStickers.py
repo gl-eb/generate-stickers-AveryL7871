@@ -50,11 +50,11 @@ while True:
         # ask user whether he wants to type the file name again
         retry = input(f"{color.BOLD + color.DARKCYAN}"
             "Do you want to type the file name again? "
-            f"Type \"yes\" or \"no\": \n{color.END}").casefold()
+            f"Type \"yes\" (default) or \"no\": \n{color.END}").casefold()
 
         # if user wants to try again, restart loop
         # otherwise exit script
-        if retry == "yes":
+        if (retry == "yes" or retry == ""):
             continue
         else:
             quit()
@@ -75,7 +75,8 @@ print(f"\n{color.BOLD + color.DARKCYAN}"
 
 # ask user whether they want to continue with the sample names
 input_continue = input(f"{color.BOLD + color.DARKCYAN}Do you want to continue "
-    f"with these names? Type \"yes\" or \"no\": {color.END}").casefold()
+    f"with these names? Type \"yes\" (default) or \"no\": {color.END}")
+input_continue = input_continue.casefold()
 
 # exit script if user says no, otherwise continue
 if input_continue == "no":
@@ -83,11 +84,12 @@ if input_continue == "no":
 
 # query user on output file name
 name_output = input(f"\n{color.BOLD + color.DARKCYAN}Type the name of "
-    f"your output file without suffix: {color.END}")
+    "your output file without suffix (e.g. \"file\" instead of \"file.txt\"). "
+    f"Press [ENTER] to use the name of the input file (default): {color.END}")
 
-# check if user input includes ".txt" suffix and add it if not
-if not name_output.casefold().endswith(".txt"):
-    name_output += ".txt"
+# use input file name as output file name if user returned empty string
+if name_output == "":
+    name_output = input_file
 
 # set output file path
 path_output = Path(str(Path().absolute()) + "/" + name_output)
@@ -99,7 +101,7 @@ path_output = Path(str(Path().absolute()) + "/" + name_output)
 # give user choice whether to add suffixes
 input_suffix = input(f"\n{color.BOLD + color.DARKCYAN}"
     "Do you want to add suffixes to your sample names? "
-    f"Type \"yes\" or \"no\": {color.END}").casefold()
+    f"Type \"yes\" or \"no\" (default): {color.END}").casefold()
 
 if input_suffix == "yes":
     # print explanation of inner workings once before continuing
@@ -142,7 +144,7 @@ if input_suffix == "yes":
         # suffix loop
         input_suffix_continue = input(f"\n{color.BOLD + color.DARKCYAN}"
             "Do you want to add another group of suffixes? "
-            f"Type \"yes\" or \"no\": {color.END}").casefold()
+            f"Type \"yes\" or \"no\" (default): {color.END}").casefold()
 
         # if user answers anything other than yes break out of loop,
         # otherwise repeat
@@ -151,15 +153,18 @@ if input_suffix == "yes":
         else:
             continue
 
+    # set path to which file with suffixed sample names will be written
+    path_suffix = Path(path_output, "_suffix.txt")
+
     # remove old output file and ignore error if it does not exist
     try:
-        path_output.unlink()
+        path_suffix.unlink()
     except (FileNotFoundError):
         pass
 
     # Create output file in append mode, loop through latest list with
     # modified names and write each one to a new line in the file.
-    with open(path_output, "a+") as file_samples:
+    with open(path_suffix, "a+") as file_samples:
         for item in names_list_new:
             file_samples.write(f"{item}\n")
 
@@ -173,7 +178,7 @@ if input_suffix == "yes":
 # ask user how many stickers they want to skip (default: 0)
 input_skip = input(f"\n{color.BOLD + color.DARKCYAN}"
     f"How many stickers do you want to skip, e.g. because they were already"
-    f" used before (default: 0): {color.END}").casefold()
+    f" used before (default = 0): {color.END}").casefold()
 
 # deal with empty or non-numeric answers
 if input_skip == "":
@@ -187,7 +192,7 @@ names_list = ([None] * input_skip) + names_list
 # give user choice whether to print date and in which format
 print(f"""{color.BOLD + color.DARKCYAN}
 Do you want to print a date to the second sticker row?
-    - For today's date in yyyy-mm-dd format (the default option),
+    - For today's date in yyyy-mm-dd format (default),
       leave empty or enter \"today\"
     - Type \"none\" to not print anything to the date field
     - Any other input will be printed verbatim as the date, e.g. \"2023\""""

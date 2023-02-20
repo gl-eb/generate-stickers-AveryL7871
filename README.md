@@ -25,6 +25,7 @@ This script reads sample names from a txt file (one name per line) and arranges 
 
 - Allow user to print empty stickers at the beginning of the sheets. This is useful if a number of stickers from a sheet have already been used
 - Change how user is queried for date printing: By default today's date is printed in iso format (yyyy-mm-dd). No date or custom dates (directly put in by the user) are also possible
+- Introduced sensible default options for all choices the user has to make. This makes it possible to simply press `[ENTER]` on each query, speeding up the process of typesetting a sticker sheet
 - Print empty sticker if index is out of bound. This ensures that table rows are filled up and fixes a bug that occured when the number of stickers was not a multiple of 7
 - Moved bigger chunks of LaTeX into their own files located in the `resources` folder
 - Fix bug which caused empty lines in the sample names file to crash the script
