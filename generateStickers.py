@@ -184,30 +184,24 @@ else:
 # prepend empty items to list of names for each sticker to skip
 names_list = ([None] * input_skip) + names_list
 
-# set variable for date as empty
-latex_date = ""
+# give user choice whether to print date and in which format
+print(f"""{color.BOLD + color.DARKCYAN}
+Do you want to print a date to the second sticker row?
+    - For today's date in yyyy-mm-dd format (the default option),
+      leave empty or enter \"today\"
+    - Type \"none\" to not print anything to the date field
+    - Any other input will be printed verbatim as the date, e.g. \"2023\""""
+)
+input_date = input(f"Your choice: {color.END}").casefold()
 
-# give user choice whether to print month and year
-input_date = input(f"\n{color.BOLD + color.DARKCYAN}"
-    "Do you want to print the current month and year on the stickers? "
-    f"Type \"yes\" or \"no\": {color.END}").casefold()
-
-if input_date == "yes":
-    # give user choice whether to print month and year
-    input_date_format = input(f"\n{color.BOLD + color.DARKCYAN}"
-        "Do you want the date to include the day in addition to month and year?"
-        f" Type \"yes\" or \"no\": {color.END}").casefold()
-
-    # redefine date format to be in the yyyy-mm format
-    if input_date_format != "yes":
-        latex_date = \
-            """% define new date style
-            \\DTMnewdatestyle{mydate}{
-                \\renewcommand{\\DTMdisplaydate}[4]{##1-\\DTMtwodigits{##2}}
-                \\renewcommand{\\DTMDisplaydate}{\\DTMdisplaydate}
-            }
-            \\DTMsetdatestyle{mydate} % set new datestyle as default
-             """
+# set latex_date variable depending on user's date choice
+match input_date:
+    case "today" | "" | "none":
+        latex_date = "\\newcommand{\\DATE}{\\today}"
+    case "none":
+        latex_date = "\\newcommand{\\DATE}{}"
+    case _:
+        latex_date = "\\newcommand{\\DATE}{"f"{input_date}""}"
 
 # function that returns sticker content
 def return_sticker(x):
@@ -220,16 +214,15 @@ def return_sticker(x):
             sticker = "{\\tiny " + sticker + "}"
         elif len(sticker) > 15: # if text is long, reduce font size less
             sticker = "{\\ssmall " + sticker + "}"
-        if input_date == "yes": # add date if specified
-            # if sticker is short, put date on new line by ending the paragraph
-            if (len(sticker) < 10 and input_date_format == "yes"):
-                sticker = sticker + "\\par\\DATE"
-            elif (len(sticker) < 13 and input_date == "yes"):
-                sticker = sticker + "\\par\\DATE"
-            else:
+        if (input_date != "none"): # add date to sticker
+            # if sticker is long let latex do the word splitting
+            if len(sticker) > 30:
                 sticker = sticker + " \\DATE"
+            else: # otherwise add paragraph
+                sticker = sticker + "\\par\\DATE"
         else: # add newline to preserve table formatting w/o date
-            sticker = sticker + "\\par"
+            if len(sticker) < 31:
+                sticker = sticker + "\\par"
         # escape underscores last to not interfere with name length
         sticker = sticker.replace("_", "\\_")
 
@@ -265,8 +258,7 @@ with open(path_latex, "a+") as file_output:
         for line in file_preamble:
             file_output.write(line)
 
-    # write date redefinition command to output file
-    # this might be an empty string if the date does not need to be redefined
+    # write date macro to output file
     file_output.write(latex_date)
 
     # write contents of before_header file to output file

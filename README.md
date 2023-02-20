@@ -5,7 +5,7 @@ This script reads sample names from a txt file (one name per line) and arranges 
 ## Requirements
 
 - A UNIX type **command-line interface** (e.g. Terminal on macOS)
-- **Python 3.5** or higher (confirmed to work on 3.8, 3.9, 3.11)
+- **Python 3.10** or higher (confirmed to work on 3.11)
 - **LaTeX** (e.g. TeX Live/MacTeX for macOS or any other TeX distribution). If you are using a small TeX distribution such as BasicTeX, make sure you have the following packages installed:
   - tabularx
   - booktabs
@@ -24,6 +24,7 @@ This script reads sample names from a txt file (one name per line) and arranges 
 ### Develop
 
 - Allow user to print empty stickers at the beginning of the sheets. This is useful if a number of stickers from a sheet have already been used
+- Change how user is queried for date printing: By default today's date is printed in iso format (yyyy-mm-dd). No date or custom dates (directly put in by the user) are also possible
 - Print empty sticker if index is out of bound. This ensures that table rows are filled up and fixes a bug that occured when the number of stickers was not a multiple of 7
 - Moved bigger chunks of LaTeX into their own files located in the `resources` folder
 - Fix bug which caused empty lines in the sample names file to crash the script
