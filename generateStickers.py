@@ -203,13 +203,40 @@ match input_date:
     case _:
         latex_date = "\\newcommand{\\DATE}{"f"{input_date}""}"
 
+# function to escape characters for LaTeX output
+# https://stackoverflow.com/a/25875504
+def tex_escape(text):
+    """
+        :param text: a plain text message
+        :return: the message escaped to appear correctly in LaTeX
+    """
+    conv = {
+        '&': r'\&',
+        '%': r'\%',
+        '$': r'\$',
+        '#': r'\#',
+        '_': r'\_',
+        '{': r'\{',
+        '}': r'\}',
+        '~': r'\textasciitilde{}',
+        '^': r'\^{}',
+        '\\': r'\textbackslash{}',
+        '<': r'\textless{}',
+        '>': r'\textgreater{}',
+    }
+    regex = re.compile(
+        '|'.join(re.escape(str(key)) for key in sorted(conv.keys(),
+        key = lambda item: - len(item)))
+    )
+    return regex.sub(lambda match: conv[match.group()], text)
+
 # function that returns sticker content
 def return_sticker(x):
     # return empty sticker
     if (x >= len(names_list) or names_list[x] is None):
         sticker = "\\phantom{empty sticker}\\par"
     else:
-        sticker = names_list[x]
+        sticker = tex_escape(names_list[x])
         if len(sticker) > 20: # if text is very long, reduce font size
             sticker = "{\\tiny " + sticker + "}"
         elif len(sticker) > 15: # if text is long, reduce font size less
@@ -223,8 +250,6 @@ def return_sticker(x):
         else: # add newline to preserve table formatting w/o date
             if len(sticker) < 31:
                 sticker = sticker + "\\par"
-        # escape underscores last to not interfere with name length
-        sticker = sticker.replace("_", "\\_")
 
     return sticker
 
