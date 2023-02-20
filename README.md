@@ -20,7 +20,7 @@ This script reads sample names from a txt file (one name per line) and arranges 
 
 ## Changelog
 
-### Develop
+### v2.3 (2023-02-20)
 
 - Allow user to print empty stickers at the beginning of the sheets. This is useful if a number of stickers from a sheet have already been used
 - Change how user is queried for date printing: By default today's date is printed in iso format (yyyy-mm-dd). No date or custom dates (directly put in by the user) are also possible

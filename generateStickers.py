@@ -1,4 +1,4 @@
-""" Version 2.2 dated April 15th 2021 by Gleb Ebert
+""" Version 2.3 (2023-02-20) by Gleb Ebert
 
     This script reads sample names from a list, presents the user with
     a couple of options to modify the names and arranges them on a
