@@ -11,7 +11,7 @@ import re  # regular expressions
 import subprocess  # passing commands to unix shell
 
 #######################################################################
-# Define functions and classes
+# define functions and classes
 #######################################################################
 
 # function that returns sticker content
@@ -81,7 +81,7 @@ class color:
 
 
 #######################################################################
-# This section deals with the initial input of sample names.
+# initial sample name input
 #######################################################################
 
 # keep asking for file names until file exists or user aborts script
