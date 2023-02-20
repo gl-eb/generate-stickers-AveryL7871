@@ -6,9 +6,64 @@
     L7871 labels
 """
 
-from pathlib import Path, PurePath # file path operations
-import re # regular expressions
-import subprocess # passing commands to unix shell
+from pathlib import Path, PurePath  # file path operations
+import re  # regular expressions
+import subprocess  # passing commands to unix shell
+
+#######################################################################
+# Define functions and classes
+#######################################################################
+
+# function that returns sticker content
+def return_sticker(x):
+    # return empty sticker
+    if (x >= len(names_list) or names_list[x] is None):
+        sticker = "\\phantom{empty sticker}\\par"
+    else:
+        sticker = tex_escape(names_list[x])
+        # reduce font size depending on how long text is
+        if len(sticker) > 20:
+            sticker = "{\\tiny " + sticker + "}"
+        elif len(sticker) > 15:
+            sticker = "{\\ssmall " + sticker + "}"
+        if (input_date != "none"):
+            # if sticker is long let latex do the word splitting
+            if len(sticker) > 30:
+                sticker = sticker + " \\DATE"
+            else:
+                sticker = sticker + "\\par\\DATE"
+        else:
+            # add newline to preserve table formatting w/o date
+            if len(sticker) < 31:
+                sticker = sticker + "\\par"
+    return sticker
+
+# function to escape characters for LaTeX output
+# https://stackoverflow.com/a/25875504
+def tex_escape(text):
+    """
+        :param text: a plain text message
+        :return: the message escaped to appear correctly in LaTeX
+    """
+    conv = {
+        '&': r'\&',
+        '%': r'\%',
+        '$': r'\$',
+        '#': r'\#',
+        '_': r'\_',
+        '{': r'\{',
+        '}': r'\}',
+        '~': r'\textasciitilde{}',
+        '^': r'\^{}',
+        '\\': r'\textbackslash{}',
+        '<': r'\textless{}',
+        '>': r'\textgreater{}',
+    }
+    regex = re.compile(
+        '|'.join(re.escape(str(key)) for key in sorted(conv.keys(),
+        key = lambda item: - len(item)))
+    )
+    return regex.sub(lambda match: conv[match.group()], text)
 
 # create class with objects to format console output
 # https://stackoverflow.com/a/287944
@@ -24,6 +79,7 @@ class color:
     UNDERLINE = "\033[4m"
     END = "\033[0m"
 
+
 #######################################################################
 # This section deals with the initial input of sample names.
 #######################################################################
@@ -32,8 +88,8 @@ class color:
 while True:
     # get input file name from user and store its name in variable
     input_file = input(f"{color.BOLD + color.DARKCYAN}"
-        "Enter the name of the txt file containing your strain/isolate names "
-        f"(one per line) followed by [ENTER] to confirm: "
+        "Enter the name of the txt file containing your strain/isolate"
+        " names (one per line) followed by [ENTER] to confirm: "
         f"{color.END}")
 
     # check if user input includes ".txt" suffix and add it if absent
@@ -42,19 +98,19 @@ while True:
 
     # if file does not exist, print error message and exit script
     if not Path(input_file).exists():
-        print(f"\n{color.BOLD + color.RED}File {input_file} not found. "
-              "Make sure file is present in your working directory:\n"
-              f"{Path().cwd()}\n"
-              "To change your working directory type "
-              f"'cd /Path/to/your/directory' then hit [ENTER]{color.END}")
+        print(f"\n{color.BOLD + color.RED}File {input_file} not found."
+              " Make sure file is present in your working directory:\n"
+              f"{Path().cwd()}\nTo change your working directory type "
+              "'cd /Path/to/your/directory' then hit [ENTER]"
+              f"{color.END}")
 
-        # ask user whether he wants to type the file name again
+        # ask user whether they wants to type the file name again
         retry = input(f"{color.BOLD + color.DARKCYAN}"
             "Do you want to type the file name again? "
-            f"Type \"yes\" (default) or \"no\": \n{color.END}").casefold()
+            f"Type \"yes\" (default) or \"no\": \n{color.END}")
+        retry = retry.casefold()
 
-        # if user wants to try again, restart loop
-        # otherwise exit script
+        # if user wants to try again restart loop otherwise exit script
         if (retry == "yes" or retry == ""):
             continue
         else:
@@ -62,11 +118,11 @@ while True:
     else:
         break
 
-# open file in read mode, read lines, filter out empty ones and convert to list
+# read lines from file, filter out empty ones and convert to list
 with open(input_file, "r", encoding='unicode_escape') as file:
     names_list = list(filter(None, (line.rstrip() for line in file)))
 
-names_number = len(names_list) # get number of names
+names_number = len(names_list)
 
 # print some of the sample names
 print(f"\n{color.BOLD + color.DARKCYAN}"
@@ -75,8 +131,9 @@ print(f"\n{color.BOLD + color.DARKCYAN}"
     f"{names_list[-1]}{color.END}")
 
 # ask user whether they want to continue with the sample names
-input_continue = input(f"{color.BOLD + color.DARKCYAN}Do you want to continue "
-    f"with these names? Type \"yes\" (default) or \"no\": {color.END}")
+input_continue = input(f"{color.BOLD + color.DARKCYAN}Do you want to "
+    "continue with these names? Type \"yes\" (default) or \"no\": "
+    f"{color.END}")
 input_continue = input_continue.casefold()
 
 # exit script if user says no, otherwise continue
@@ -85,8 +142,9 @@ if input_continue == "no":
 
 # query user on output file name
 name_output = input(f"\n{color.BOLD + color.DARKCYAN}Type the name of "
-    "your output file without suffix (e.g. \"file\" instead of \"file.txt\"). "
-    f"Press [ENTER] to use the name of the input file (default): {color.END}")
+    "your output file without suffix (e.g. \"file\" instead of "
+    "\"file.txt\"). Press [ENTER] to use the name of the input file "
+    f"(default): {color.END}")
 
 # use input file name as output file name if user returned empty string
 if name_output == "":
@@ -96,7 +154,7 @@ if name_output == "":
 path_output = Path(str(Path().absolute()) + "/" + name_output)
 
 #######################################################################
-# The following section deals with name suffixes
+# construct sample names using suffixes
 #######################################################################
 
 # give user choice whether to add suffixes
@@ -108,19 +166,20 @@ if input_suffix == "yes":
     # print explanation of inner workings once before continuing
     print(f"\n{color.BOLD + color.DARKCYAN}"
         "==========================================")
-    print("\nIn the following part of the script you will supply groups of "
-        "suffixes (e.g. treatment names or replicate numbers) separated by "
-        "spaces: \"CTRL TREAT1 TREAT2 TREAT3\". Each suffix will be combined "
-        "with each sample name (e.g. Strain1-TREAT1, Strain1-TREAT2 ... "
-        "Strain10-TREAT3). You will also have to opportunity to supply "
-        "multiple suffix groups one after the other (the result of this would "
-        "be something like Strain1-TREAT1-Replicate1, "
-        "Strain1-TREAT1-Replicate2 ...).{color.END}")
+    print("\nIn the following part of the script you will supply "
+    "groups of suffixes (e.g. treatment names or replicate numbers)"
+    " separated by spaces: \"CTRL TREAT1 TREAT2 TREAT3\". Each suffix"
+    " will be combined with each sample name (e.g. Strain1-TREAT1, "
+    "Strain1-TREAT2 ... Strain10-TREAT3). You will also have the "
+    "opportunity to supply multiple suffix groups one after the other "
+    "(the result of this would be something like "
+    "Strain1-TREAT1-Replicate1, Strain1-TREAT1-Replicate2 ...)."
+    "{color.END}")
 
     # initiate list with names to be modified
     names_list_old = names_list
 
-    # Keep asking for suffixes and adding them to sample names
+    # keep asking for suffixes and adding them to sample names
     # until user stops loop.
     while True:
         # ask for group of suffixes
@@ -163,23 +222,22 @@ if input_suffix == "yes":
     except (FileNotFoundError):
         pass
 
-    # Create output file in append mode, loop through latest list with
-    # modified names and write each one to a new line in the file.
+    # write new sample names to new output file
     with open(path_suffix, "a+") as file_samples:
         for item in names_list_new:
             file_samples.write(f"{item}\n")
 
-    # replace old list of names with new one
+    # replace original list of names with suffixed names
     names_list = names_list_new
 
 #######################################################################
-# logic and parameters for LaTeX typesetting
+# customization of output
 #######################################################################
 
 # ask user how many stickers they want to skip (default: 0)
 input_skip = input(f"\n{color.BOLD + color.DARKCYAN}"
-    f"How many stickers do you want to skip, e.g. because they were already"
-    f" used before (default = 0): {color.END}").casefold()
+    f"How many stickers do you want to skip, e.g. because they were "
+    f"already used before (default = 0): {color.END}").casefold()
 
 # deal with empty or non-numeric answers
 if input_skip == "":
@@ -196,7 +254,8 @@ Do you want to print a date to the second sticker row?
     - For today's date in yyyy-mm-dd format (default),
       leave empty or enter \"today\"
     - Type \"none\" to not print anything to the date field
-    - Any other input will be printed verbatim as the date, e.g. \"2023\""""
+    - Any other input will be printed verbatim as the date,
+      e.g. \"2023\""""
 )
 input_date = input(f"Your choice: {color.END}").casefold()
 
@@ -209,78 +268,26 @@ match input_date:
     case _:
         latex_date = "\\newcommand{\\DATE}{"f"{input_date}""}"
 
-# function to escape characters for LaTeX output
-# https://stackoverflow.com/a/25875504
-def tex_escape(text):
-    """
-        :param text: a plain text message
-        :return: the message escaped to appear correctly in LaTeX
-    """
-    conv = {
-        '&': r'\&',
-        '%': r'\%',
-        '$': r'\$',
-        '#': r'\#',
-        '_': r'\_',
-        '{': r'\{',
-        '}': r'\}',
-        '~': r'\textasciitilde{}',
-        '^': r'\^{}',
-        '\\': r'\textbackslash{}',
-        '<': r'\textless{}',
-        '>': r'\textgreater{}',
-    }
-    regex = re.compile(
-        '|'.join(re.escape(str(key)) for key in sorted(conv.keys(),
-        key = lambda item: - len(item)))
-    )
-    return regex.sub(lambda match: conv[match.group()], text)
-
-# function that returns sticker content
-def return_sticker(x):
-    # return empty sticker
-    if (x >= len(names_list) or names_list[x] is None):
-        sticker = "\\phantom{empty sticker}\\par"
-    else:
-        sticker = tex_escape(names_list[x])
-        if len(sticker) > 20: # if text is very long, reduce font size
-            sticker = "{\\tiny " + sticker + "}"
-        elif len(sticker) > 15: # if text is long, reduce font size less
-            sticker = "{\\ssmall " + sticker + "}"
-        if (input_date != "none"): # add date to sticker
-            # if sticker is long let latex do the word splitting
-            if len(sticker) > 30:
-                sticker = sticker + " \\DATE"
-            else: # otherwise add paragraph
-                sticker = sticker + "\\par\\DATE"
-        else: # add newline to preserve table formatting w/o date
-            if len(sticker) < 31:
-                sticker = sticker + "\\par"
-
-    return sticker
-
-# set output file to .tex
-path_latex = path_output.with_suffix(".tex")
-
-# remove old output file and ignore error if file does not exist
-try:
-    path_latex.unlink()
-except (FileNotFoundError):
-    pass
-
-# Round number of pages needed to fit all stickers up to nearest
-# whole page.
-names_number = len(names_list)
-latex_pages = (names_number // 189) + 1
 
 #######################################################################
 # typeset LaTeX file
 #######################################################################
 
-# set paths to files
+# set paths to typesetting and output files
 dir_avery = PurePath(__file__).parent
 path_preamble = Path(dir_avery, "resources", "preamble.tex")
 path_before_body = Path(dir_avery, "resources", "before_body.tex")
+path_latex = path_output.with_suffix(".tex")
+
+# remove old output file if one already exist
+try:
+    path_latex.unlink()
+except (FileNotFoundError):
+    pass
+
+# calculate number of pages necessary to fit all stickers
+# (including skipped ones)
+latex_pages = (names_number // 189) + 1
 
 # create .tex file and write to it
 with open(path_latex, "a+") as file_output:
@@ -306,13 +313,13 @@ with open(path_latex, "a+") as file_output:
         file_output.write(f"% Page {page_number+1}\n"
             "\\begin{tabularx}{\\linewidth}{@{}*{7}{Y}@{}}\n")
 
-        # loop through each line of and write sticker contents to it
+        # loop through all rows
         for line_number in range(27):
             # add tab character at beginning of line
             file_output.write("\t")
-            #
+            # loop through columns
             for position in range(7):
-                # if unprinted sample names left, do so
+                # print unprinted sample names
                 if (position < 6):
                     file_output.write(f"{return_sticker(n)} & ")
                 elif (position == 6):
@@ -320,12 +327,10 @@ with open(path_latex, "a+") as file_output:
                 else:
                     break
                 n += 1
-            # end line after 7 stickers
-            file_output.write(" \\\\")
-            # if line is the last one of the page
+            file_output.write(" \\\\")  # end line after 7 stickers
+            # add whitespace after lines
             if (line_number == 26):
                 file_output.write(" \\addlinespace[0.05cm]\n")
-            # if next line is not the last line of the page
             else:
                 file_output.write(" \\addlinespace[0.470878cm]\n")
             # if all names were printed, break loop
@@ -336,7 +341,6 @@ with open(path_latex, "a+") as file_output:
     # reenable command line output and end document
     file_output.write("\\scrollmode\n\\end{document}")
 
-# call pdflatex to typeset .tex file # text = FALSE
+# call pdflatex to typeset .tex file and open resulting pdf
 subprocess.run(["pdflatex", path_latex], stdout=subprocess.DEVNULL)
-# open resulting pdf file
 subprocess.run(["open", path_latex.with_suffix(".pdf")])
