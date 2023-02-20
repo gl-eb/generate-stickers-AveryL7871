@@ -11,6 +11,7 @@ import re # regular expressions
 import subprocess # passing commands to unix shell
 
 # create class with objects to format console output
+# https://stackoverflow.com/a/287944
 class color:
     PURPLE = "\033[95m"
     CYAN = "\033[96m"
