@@ -7,7 +7,6 @@ This script reads sample names from a txt file (one name per line) and arranges 
 - A UNIX type **command-line interface** (e.g. Terminal on macOS)
 - **Python 3.10** or higher (confirmed to work on 3.11)
 - **LaTeX** (e.g. TeX Live/MacTeX for macOS or any other TeX distribution). If you are using a small TeX distribution such as BasicTeX, make sure you have the following packages installed:
-  - tabularx
   - booktabs
   - datetime2
   - moresize
