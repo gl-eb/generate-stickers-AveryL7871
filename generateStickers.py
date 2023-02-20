@@ -1,4 +1,4 @@
-""" Version 2.2 dated April 15th 2021 by Gleb Ebert
+""" Version 2.3 (2023-02-20) by Gleb Ebert
 
     This script reads sample names from a list, presents the user with
     a couple of options to modify the names and arranges them on a
@@ -6,10 +6,67 @@
     L7871 labels
 """
 
-from pathlib import Path # we use this for file path operations
-import subprocess # this is for passing commands to unix shell
+from pathlib import Path, PurePath  # file path operations
+import re  # regular expressions
+import subprocess  # passing commands to unix shell
+
+#######################################################################
+# Define functions and classes
+#######################################################################
+
+# function that returns sticker content
+def return_sticker(x):
+    # return empty sticker
+    if (x >= len(names_list) or names_list[x] is None):
+        sticker = "\\phantom{empty sticker}\\par"
+    else:
+        sticker = tex_escape(names_list[x])
+        # reduce font size depending on how long text is
+        if len(sticker) > 20:
+            sticker = "{\\tiny " + sticker + "}"
+        elif len(sticker) > 15:
+            sticker = "{\\ssmall " + sticker + "}"
+        if (input_date != "none"):
+            # if sticker is long let latex do the word splitting
+            if len(sticker) > 30:
+                sticker = sticker + " \\DATE"
+            else:
+                sticker = sticker + "\\par\\DATE"
+        else:
+            # add newline to preserve table formatting w/o date
+            if len(sticker) < 31:
+                sticker = sticker + "\\par"
+    return sticker
+
+# function to escape characters for LaTeX output
+# https://stackoverflow.com/a/25875504
+def tex_escape(text):
+    """
+        :param text: a plain text message
+        :return: the message escaped to appear correctly in LaTeX
+    """
+    conv = {
+        '&': r'\&',
+        '%': r'\%',
+        '$': r'\$',
+        '#': r'\#',
+        '_': r'\_',
+        '{': r'\{',
+        '}': r'\}',
+        '~': r'\textasciitilde{}',
+        '^': r'\^{}',
+        '\\': r'\textbackslash{}',
+        '<': r'\textless{}',
+        '>': r'\textgreater{}',
+    }
+    regex = re.compile(
+        '|'.join(re.escape(str(key)) for key in sorted(conv.keys(),
+        key = lambda item: - len(item)))
+    )
+    return regex.sub(lambda match: conv[match.group()], text)
 
 # create class with objects to format console output
+# https://stackoverflow.com/a/287944
 class color:
     PURPLE = "\033[95m"
     CYAN = "\033[96m"
@@ -22,6 +79,7 @@ class color:
     UNDERLINE = "\033[4m"
     END = "\033[0m"
 
+
 #######################################################################
 # This section deals with the initial input of sample names.
 #######################################################################
@@ -30,8 +88,8 @@ class color:
 while True:
     # get input file name from user and store its name in variable
     input_file = input(f"{color.BOLD + color.DARKCYAN}"
-        "Enter the name of the txt file containing your strain/isolate names "
-        f"(one per line) followed by [ENTER] to confirm: "
+        "Enter the name of the txt file containing your strain/isolate"
+        " names (one per line) followed by [ENTER] to confirm: "
         f"{color.END}")
 
     # check if user input includes ".txt" suffix and add it if absent
@@ -40,83 +98,88 @@ while True:
 
     # if file does not exist, print error message and exit script
     if not Path(input_file).exists():
-        print(f"\n{color.BOLD + color.RED}File {input_file} not found. "
-              "Make sure file is present in your working directory:\n"
-              f"{Path().cwd()}\n"
-              "To change your working directory type "
-              f"'cd /Path/to/your/directory' then hit [ENTER]{color.END}")
+        print(f"\n{color.BOLD + color.RED}File {input_file} not found."
+              " Make sure file is present in your working directory:\n"
+              f"{Path().cwd()}\nTo change your working directory type "
+              "'cd /Path/to/your/directory' then hit [ENTER]"
+              f"{color.END}")
 
-        # ask user whether he wants to type the file name again
-        input_file_again = input(f"{color.BOLD + color.DARKCYAN}"
+        # ask user whether they wants to type the file name again
+        retry = input(f"{color.BOLD + color.DARKCYAN}"
             "Do you want to type the file name again? "
-            f"Type \"yes\" or \"no\": \n{color.END}").casefold()
+            f"Type \"yes\" (default) or \"no\": \n{color.END}")
+        retry = retry.casefold()
 
-        # if user wants to try again, restart loop
-        # otherwise exit script
-        if input_file_again == "yes":
+        # if user wants to try again restart loop otherwise exit script
+        if (retry == "yes" or retry == ""):
             continue
         else:
             quit()
     else:
         break
 
-# open file in read mode
-with open(input_file, "r") as file_handle:
-    # convert file contents into a list
-    names_list_original = file_handle.read().splitlines()
+# read lines from file, filter out empty ones and convert to list
+with open(input_file, "r", encoding='unicode_escape') as file:
+    names_list = list(filter(None, (line.rstrip() for line in file)))
 
-names_number = len(names_list_original) # get number of names
+names_number = len(names_list)
 
 # print some of the sample names
 print(f"\n{color.BOLD + color.DARKCYAN}"
-    f"Your file contains {names_number} names:\n{names_list_original[0]}, "
-    f"{names_list_original[1]} ... {names_list_original[-1]}{color.END}")
+    f"Your file contains {names_number} names:\n"
+    f"{names_list[0]}, {names_list[1]} ... "
+    f"{names_list[-1]}{color.END}")
 
-# ask user whether he wants to type the file name again
-input_file_ok = input(f"{color.BOLD + color.DARKCYAN}Do you want to continue "
-    f"with these names? Type \"yes\" or \"no\": {color.END}").casefold()
+# ask user whether they want to continue with the sample names
+input_continue = input(f"{color.BOLD + color.DARKCYAN}Do you want to "
+    "continue with these names? Type \"yes\" (default) or \"no\": "
+    f"{color.END}")
+input_continue = input_continue.casefold()
 
 # exit script if user says no, otherwise continue
-if input_file_ok == "no":
+if input_continue == "no":
     quit()
 
 # query user on output file name
-output_file_name = input(f"\n{color.BOLD + color.DARKCYAN}Type the name of "
-    f"your output file without suffix: {color.END}")
+name_output = input(f"\n{color.BOLD + color.DARKCYAN}Type the name of "
+    "your output file without suffix (e.g. \"file\" instead of "
+    "\"file.txt\"). Press [ENTER] to use the name of the input file "
+    f"(default): {color.END}")
 
-# check if user input includes ".txt" suffix and add it if not
-if not output_file_name.casefold().endswith(".txt"):
-    output_file_name += ".txt"
+# use input file name as output file name if user returned empty string
+if name_output == "":
+    name_output = input_file
 
 # set output file path
-output_file_path = Path(str(Path().absolute()) + "/" + output_file_name)
+path_output = Path(str(Path().absolute()) + "/" + name_output)
 
 #######################################################################
-# The following section deals with name suffixes
+# construct sample names using suffixes
 #######################################################################
 
 # give user choice whether to add suffixes
-input_suffix_if = input(f"\n{color.BOLD + color.DARKCYAN}"
+input_suffix = input(f"\n{color.BOLD + color.DARKCYAN}"
     "Do you want to add suffixes to your sample names? "
-    f"Type \"yes\" or \"no\": {color.END}").casefold()
+    f"Type \"yes\" or \"no\" (default): {color.END}").casefold()
 
-if input_suffix_if == "yes":
+if input_suffix == "yes":
     # print explanation of inner workings once before continuing
     print(f"\n{color.BOLD + color.DARKCYAN}"
         "==========================================")
-    print("\nIn the following part of the script you will supply groups of "
-        "suffixes (e.g. treatment names or replicate numbers) separated by "
-        "spaces: \"CTRL TREAT1 TREAT2 TREAT3\". Each suffix will be combined "
-        "with each sample name (e.g. Strain1-TREAT1, Strain1-TREAT2 ... "
-        "Strain10-TREAT3). You will also have to opportunity to supply "
-        "multiple suffix groups one after the other (the result of this would "
-        "be something like Strain1-TREAT1-Replicate1, "
-        "Strain1-TREAT1-Replicate2 ...).{color.END}")
+    print("\nIn the following part of the script you will supply "
+    "groups of suffixes (e.g. treatment names or replicate numbers)"
+    " separated by spaces: \"CTRL TREAT1 TREAT2 TREAT3\". Each suffix"
+    " will be combined with each sample name (e.g. Strain1-TREAT1, "
+    "Strain1-TREAT2 ... Strain10-TREAT3). You will also have the "
+    "opportunity to supply multiple suffix groups one after the other "
+    "(the result of this would be something like "
+    "Strain1-TREAT1-Replicate1, Strain1-TREAT1-Replicate2 ...)."
+    "{color.END}")
 
     # initiate list with names to be modified
-    names_list_old = names_list_original
+    names_list_old = names_list
 
-    # Keep asking for suffixes and adding them to sample names
+    # keep asking for suffixes and adding them to sample names
     # until user stops loop.
     while True:
         # ask for group of suffixes
@@ -141,7 +204,7 @@ if input_suffix_if == "yes":
         # suffix loop
         input_suffix_continue = input(f"\n{color.BOLD + color.DARKCYAN}"
             "Do you want to add another group of suffixes? "
-            f"Type \"yes\" or \"no\": {color.END}").casefold()
+            f"Type \"yes\" or \"no\" (default): {color.END}").casefold()
 
         # if user answers anything other than yes break out of loop,
         # otherwise repeat
@@ -150,132 +213,96 @@ if input_suffix_if == "yes":
         else:
             continue
 
+    # set path to which file with suffixed sample names will be written
+    path_suffix = Path(path_output, "_suffix.txt")
+
     # remove old output file and ignore error if it does not exist
     try:
-        output_file_path.unlink()
+        path_suffix.unlink()
     except (FileNotFoundError):
         pass
 
-    # Create output file in append mode, loop through latest list with
-    # modified names and write each one to a new line in the file.
-    with open(output_file_path, "a+") as sampleFile:
+    # write new sample names to new output file
+    with open(path_suffix, "a+") as file_samples:
         for item in names_list_new:
-            sampleFile.write(f"{item}\n")
+            file_samples.write(f"{item}\n")
+
+    # replace original list of names with suffixed names
+    names_list = names_list_new
+
+#######################################################################
+# customization of output
+#######################################################################
+
+# ask user how many stickers they want to skip (default: 0)
+input_skip = input(f"\n{color.BOLD + color.DARKCYAN}"
+    f"How many stickers do you want to skip, e.g. because they were "
+    f"already used before (default = 0): {color.END}").casefold()
+
+# deal with empty or non-numeric answers
+if input_skip == "":
+    input_skip = 0
 else:
-    names_list_new = names_list_original
+    input_skip = int(input_skip)
 
-#######################################################################
-# logic and parameters for LaTeX typesetting
-#######################################################################
+# prepend empty items to list of names for each sticker to skip
+names_list = ([None] * input_skip) + names_list
 
-# set variable for date as empty
-latex_date = ""
+# give user choice whether to print date and in which format
+print(f"""{color.BOLD + color.DARKCYAN}
+Do you want to print a date to the second sticker row?
+    - For today's date in yyyy-mm-dd format (default),
+      leave empty or enter \"today\"
+    - Type \"none\" to not print anything to the date field
+    - Any other input will be printed verbatim as the date,
+      e.g. \"2023\""""
+)
+input_date = input(f"Your choice: {color.END}").casefold()
 
-# give user choice whether to print month and year
-input_date_if = input(f"\n{color.BOLD + color.DARKCYAN}"
-    "Do you want to print the current month and year on the stickers? "
-    f"Type \"yes\" or \"no\":  {color.END}").casefold()
+# set latex_date variable depending on user's date choice
+match input_date:
+    case "today" | "" | "none":
+        latex_date = "\\newcommand{\\DATE}{\\today}"
+    case "none":
+        latex_date = "\\newcommand{\\DATE}{}"
+    case _:
+        latex_date = "\\newcommand{\\DATE}{"f"{input_date}""}"
 
-if input_date_if == "yes":
-    # give user choice whether to print month and year
-    input_date_format = input(f"\n{color.BOLD + color.DARKCYAN}"
-        "Do you want the date to include the day in addition to month and year?"
-        f" Type \"yes\" or \"no\":  {color.END}").casefold()
-
-    # set latex date to format set by user
-    if input_date_format == "yes":
-        latex_date = "\t\t\\DTMtwodigits{##3}-\\DTMtwodigits{##2}-##1"
-    else:
-        latex_date = "\t\t\\DTMtwodigits{##2}-##1"
-
-# function that returns sticker content
-def return_sticker(x):
-    sticker = names_list_new[x]
-    if len(sticker) > 20: # if text is very long, reduce font size
-        sticker = "{\\tiny " + sticker + "}"
-    elif len(sticker) > 15: # if text is not too long, reduce font size a bit
-        sticker = "{\\ssmall " + sticker + "}"
-    if input_date_if == "yes": # add date if specified
-        # if sticker is short, put date on new line by ending the paragraph
-        if (len(sticker) < 10 and input_date_format == "yes"):
-            sticker = sticker + "\\par\\DATE"
-        elif (len(sticker) < 13 and input_date_if == "yes"):
-            sticker = sticker + "\\par\\DATE"
-        else:
-            sticker = sticker + " \\DATE"
-    else: # add newline to preserve table formatting w/o date
-        sticker = sticker + "\\par"
-    # escape underscores last to not interfere with name length
-    sticker = sticker.replace("_", "\_")
-    return sticker
-
-# set output file to .tex
-latex_file_path = output_file_path.with_suffix(".tex")
-
-# remove old output file and ignore error if file does not exist
-try:
-    latex_file_path.unlink()
-except (FileNotFoundError):
-    pass
-
-# Round number of pages needed to fit all stickers up to nearest
-# whole page.
-names_number_new = len(names_list_new)
-latex_pages = (names_number_new // 189) + 1
 
 #######################################################################
 # typeset LaTeX file
 #######################################################################
 
-# save latex document preamble in variable
-latex_preamble = \
-"""\\batchmode % disable command line output
-\\documentclass[a4paper]{article} % document definition
-% used to adjust page margins to 3.5mm
-\\usepackage[top=1.2cm, bottom=1.2cm, left=0.5cm, right=0.5cm]{geometry}
-% used for table with columns of a defined width
-\\usepackage{tabularx}
-% used to add white space after column rows
-\\usepackage{booktabs}
-% to format date
-\\usepackage{datetime2}
-% for more font sizes
-\\usepackage{moresize}
+# set paths to typesetting and output files
+dir_avery = PurePath(__file__).parent
+path_preamble = Path(dir_avery, "resources", "preamble.tex")
+path_before_body = Path(dir_avery, "resources", "before_body.tex")
+path_latex = path_output.with_suffix(".tex")
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# remove old output file if one already exist
+try:
+    path_latex.unlink()
+except (FileNotFoundError):
+    pass
 
-\\pagestyle{empty} % no page numbers
-\\setlength{\\parindent}{0pt} % set paragraph indent to zero
-
-% define new date style
-\\DTMnewdatestyle{mydate}{%
-    \\renewcommand{\\DTMdisplaydate}[4]{%
-"""\
-f"{latex_date}"\
-"""
-    }%
-    \\renewcommand{\\DTMDisplaydate}{\\DTMdisplaydate}%
-}
-\\DTMsetdatestyle{mydate} % set new datestyle as default
-\\newcommand{\\DATE}{\\today} % create alias for current date command
-
-% defines custom column type for table
-\\newcolumntype{Y}{>{\\centering\\arraybackslash}X}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\\begin{document}
-
-% scriptsize/ssmall, bold and sans-serif font throughout the entire document
-\\scriptsize \\bfseries \\sffamily
-% table definition: spans the entire page in (text)width
-% @{} removes white space before first and after last row
-% *{7}{Y} defines seven columns of equal width with text centering
-% sample name and date rows alternate with different amounts of spacing\n\n"""
+# calculate number of pages necessary to fit all stickers
+# (including skipped ones)
+latex_pages = (names_number // 189) + 1
 
 # create .tex file and write to it
-with open(latex_file_path, "a+") as latex_file:
-    latex_file.write(latex_preamble) # write preamble once
+with open(path_latex, "a+") as file_output:
+    # write contents of preamble file to output file
+    with open(path_preamble, "r") as file_preamble:
+        for line in file_preamble:
+            file_output.write(line)
+
+    # write date macro to output file
+    file_output.write(latex_date)
+
+    # write contents of before_header file to output file
+    with open(path_before_body, "r") as file_before_body:
+        for line in file_before_body:
+            file_output.write(line)
 
     # variable to track the current position in the list of names
     n = 0
@@ -283,40 +310,37 @@ with open(latex_file_path, "a+") as latex_file:
     # loop through pages of final sticker layout
     for page_number in range(latex_pages):
         # start each page with the opening of the table environment
-        latex_file.write(f"% Page {page_number+1}\n"
-            "\\begin{tabularx}{\linewidth}{@{}*{7}{Y}@{}}\n")
+        file_output.write(f"% Page {page_number+1}\n"
+            "\\begin{tabularx}{\\linewidth}{@{}*{7}{Y}@{}}\n")
 
-        # loop through each line of and write sticker contents to it
+        # loop through all rows
         for line_number in range(27):
             # add tab character at beginning of line
-            latex_file.write("\t")
-            #
-            for l in range (7):
-                # if names to be printed still left, do so
-                if (n < (names_number_new-1) and l < 6):
-                    latex_file.write(f"{return_sticker(n)} & ")
-                elif (n == (names_number_new-1) or l == 6):
-                    latex_file.write(f"{return_sticker(n)}")
+            file_output.write("\t")
+            # loop through columns
+            for position in range(7):
+                # print unprinted sample names
+                if (position < 6):
+                    file_output.write(f"{return_sticker(n)} & ")
+                elif (position == 6):
+                    file_output.write(f"{return_sticker(n)}")
                 else:
                     break
                 n += 1
-            # end line after 7 stickers
-            latex_file.write(" \\\\")
-            # if line is the last one of the page
+            file_output.write(" \\\\")  # end line after 7 stickers
+            # add whitespace after lines
             if (line_number == 26):
-                latex_file.write(" \\addlinespace[0.05cm]\n")
-            # if next line is not the last line of the page
+                file_output.write(" \\addlinespace[0.05cm]\n")
             else:
-                latex_file.write(" \\addlinespace[0.470878cm]\n")
+                file_output.write(" \\addlinespace[0.470878cm]\n")
             # if all names were printed, break loop
-            if (n == names_number_new):
+            if (n >= names_number):
                 break
         # close table environment at the end of the page
-        latex_file.write("\\end{tabularx}\n\n")
+        file_output.write("\\end{tabularx}\n\n")
     # reenable command line output and end document
-    latex_file.write("\\scrollmode\n\\end{document}")
+    file_output.write("\\scrollmode\n\\end{document}")
 
-# call pdflatex to typeset .tex file # text = FALSE
-subprocess.run(["pdflatex", latex_file_path], stdout=subprocess.DEVNULL)
-# open resulting pdf file
-subprocess.run(["open", latex_file_path.with_suffix(".pdf")])
+# call pdflatex to typeset .tex file and open resulting pdf
+subprocess.run(["pdflatex", path_latex], stdout=subprocess.DEVNULL)
+subprocess.run(["open", path_latex.with_suffix(".pdf")])

@@ -1,0 +1,20 @@
+\batchmode % disable command line output
+\documentclass[a4paper]{article} % document definition
+% set document margins
+\usepackage[top=1.2cm, bottom=1.2cm, left=0.5cm, right=0.5cm]{geometry}
+% tables with columns of a defined width
+\usepackage{tabularx}
+% table formatting
+\usepackage{booktabs}
+% date formatting
+\usepackage[style=iso]{datetime2}
+% more font sizes
+\usepackage{moresize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\pagestyle{empty} % no page numbers
+\setlength{\parindent}{0pt} % set paragraph indent to zero
+
+% defines custom column type for table
+\newcolumntype{Y}{>{\centering\arraybackslash}X}
