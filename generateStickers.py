@@ -111,7 +111,7 @@ while True:
         retry = retry.casefold()
 
         # if user wants to try again restart loop otherwise exit script
-        if (retry == "yes" or retry == ""):
+        if (retry == "yes" or not retry):
             continue
         else:
             quit()
@@ -147,7 +147,7 @@ name_output = input(f"\n{color.BOLD + color.DARKCYAN}Type the name of "
     f"(default): {color.END}")
 
 # use input file name as output file name if user returned empty string
-if name_output == "":
+if not name_output:
     name_output = input_file
 
 # set output file path
@@ -240,7 +240,7 @@ input_skip = input(f"\n{color.BOLD + color.DARKCYAN}"
     f"already used before (default = 0): {color.END}").casefold()
 
 # deal with empty or non-numeric answers
-if input_skip == "":
+if not input_skip:
     input_skip = 0
 else:
     input_skip = int(input_skip)
