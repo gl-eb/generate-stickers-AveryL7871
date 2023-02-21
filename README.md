@@ -20,6 +20,11 @@ This script reads sample names from a txt file (one name per line) and arranges 
 
 ## Changelog
 
+### v2.3.1 (2023-02-21)
+
+- Bug fix: Update number of stickers to print after skipping stickers
+- Minor code and comment refactoring
+
 ### v2.3 (2023-02-20)
 
 - Allow user to print empty stickers at the beginning of the sheets. This is useful if a number of stickers from a sheet have already been used
