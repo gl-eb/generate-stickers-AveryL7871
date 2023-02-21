@@ -247,6 +247,7 @@ else:
 
 # prepend empty items to list of names for each sticker to skip
 names_list = ([None] * input_skip) + names_list
+names_number = len(names_list)
 
 # give user choice whether to print date and in which format
 print(f"""{color.BOLD + color.DARKCYAN}
