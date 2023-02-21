@@ -11,7 +11,7 @@ import re  # regular expressions
 import subprocess  # passing commands to unix shell
 
 #######################################################################
-# Define functions and classes
+# define functions and classes
 #######################################################################
 
 # function that returns sticker content
@@ -81,7 +81,7 @@ class color:
 
 
 #######################################################################
-# This section deals with the initial input of sample names.
+# initial sample name input
 #######################################################################
 
 # keep asking for file names until file exists or user aborts script
@@ -111,7 +111,7 @@ while True:
         retry = retry.casefold()
 
         # if user wants to try again restart loop otherwise exit script
-        if (retry == "yes" or retry == ""):
+        if (retry == "yes" or not retry):
             continue
         else:
             quit()
@@ -147,7 +147,7 @@ name_output = input(f"\n{color.BOLD + color.DARKCYAN}Type the name of "
     f"(default): {color.END}")
 
 # use input file name as output file name if user returned empty string
-if name_output == "":
+if not name_output:
     name_output = input_file
 
 # set output file path
@@ -240,13 +240,14 @@ input_skip = input(f"\n{color.BOLD + color.DARKCYAN}"
     f"already used before (default = 0): {color.END}").casefold()
 
 # deal with empty or non-numeric answers
-if input_skip == "":
+if not input_skip:
     input_skip = 0
 else:
     input_skip = int(input_skip)
 
 # prepend empty items to list of names for each sticker to skip
 names_list = ([None] * input_skip) + names_list
+names_number = len(names_list)
 
 # give user choice whether to print date and in which format
 print(f"""{color.BOLD + color.DARKCYAN}
