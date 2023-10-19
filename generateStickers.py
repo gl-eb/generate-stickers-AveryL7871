@@ -9,6 +9,8 @@
 from pathlib import Path, PurePath  # file path operations
 import re  # regular expressions
 import subprocess  # passing commands to unix shell
+import os
+
 
 #######################################################################
 # define functions and classes
@@ -85,6 +87,8 @@ class color:
 #######################################################################
 
 # keep asking for file names until file exists or user aborts script
+# System call
+os.system("")
 while True:
     # get input file name from user and store its name in variable
     input_file = input(f"{color.BOLD + color.DARKCYAN}"
