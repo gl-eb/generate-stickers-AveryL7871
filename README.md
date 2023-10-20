@@ -5,7 +5,8 @@ This script reads sample names from a txt file (one name per line) and arranges 
 ## Requirements
 
 - This script was developed primarily for a UNIX type **command-line interface** (e.g. Terminal on macOS), but it should also work on Windows
-- **Python 3.10** or higher (confirmed to work on 3.11, 3.12)
+- **Python 3.10** or higher (confirmed to work on 3.11, 3.12) with the following packages installed:
+  - [Colorama](https://github.com/tartley/colorama)
 - **LaTeX** (e.g. TeX Live/MacTeX for macOS or any other TeX distribution). If you are using a small TeX distribution such as BasicTeX, make sure you have the following packages installed:
   - booktabs
   - datetime2

@@ -4,6 +4,7 @@
 
 - Check if LaTeX is installed and available. Exit script if this is not the case
 - Open PDF using platform-specific command
+- Use [Colorama](https://github.com/tartley/colorama) for cross-platform text formatting
 
 ## v2.3.2 (2023-10-20)
 

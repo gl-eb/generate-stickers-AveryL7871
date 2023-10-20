@@ -13,6 +13,7 @@ import shutil
 import subprocess
 import sys
 import os
+from colorama import just_fix_windows_console
 
 
 #######################################################################
@@ -94,8 +95,8 @@ exec_latex = "pdflatex"
 if shutil.which(exec_latex) is None:
     sys.exit(exec_latex + " was not found. Please install LaTeX")
 
-# fix ANSI colors on Windows: https://stackoverflow.com/a/54955094
-os.system("")
+# fix ANSI text formatting on Windows
+just_fix_windows_console()
 
 
 #######################################################################
