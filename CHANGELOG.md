@@ -1,5 +1,9 @@
 # Changelog
 
+## develop
+
+- Open PDF using platform-specific command
+
 ## v2.3.2 (2023-10-20)
 
 - Fix ANSI text formatting not working on Windows

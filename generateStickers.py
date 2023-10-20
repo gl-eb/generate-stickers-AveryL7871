@@ -7,6 +7,7 @@
 """
 
 from pathlib import Path, PurePath
+from platform import system
 import re
 import subprocess
 import os
@@ -347,6 +348,13 @@ with open(path_latex, "a+") as file_output:
     # reenable command line output and end document
     file_output.write("\\scrollmode\n\\end{document}")
 
-# call pdflatex to typeset .tex file and open resulting pdf
+# call pdflatex to typeset .tex file
 subprocess.run(["pdflatex", path_latex], stdout=subprocess.DEVNULL)
-subprocess.run(["open", path_latex.with_suffix(".pdf")])
+
+# open resulting pdf file in an OS-dependent manner
+if system() == 'Darwin':
+    subprocess.run(["open", path_latex.with_suffix(".pdf")])
+elif system() == 'Windows':
+    os.startfile(path_latex.with_suffix(".pdf"))
+else:
+    subprocess.run(["xdg-open", path_latex.with_suffix(".pdf")])
