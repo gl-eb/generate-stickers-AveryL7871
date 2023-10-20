@@ -6,10 +6,10 @@
     L7871 labels
 """
 
-from pathlib import Path, PurePath  # file path operations
-import re  # regular expressions
-import subprocess  # passing commands to unix shell
-import os # operation system interfaces
+from pathlib import Path, PurePath
+import re
+import subprocess
+import os
 
 
 #######################################################################
