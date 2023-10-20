@@ -9,7 +9,7 @@
 from pathlib import Path, PurePath  # file path operations
 import re  # regular expressions
 import subprocess  # passing commands to unix shell
-import os
+import os # operation system interfaces
 
 
 #######################################################################
@@ -86,9 +86,10 @@ class color:
 # initial sample name input
 #######################################################################
 
-# keep asking for file names until file exists or user aborts script
-# System call
+# fix ANSI colors on Windows: https://stackoverflow.com/a/54955094
 os.system("")
+
+# keep asking for file names until file exists or user aborts script
 while True:
     # get input file name from user and store its name in variable
     input_file = input(f"{color.BOLD + color.DARKCYAN}"
