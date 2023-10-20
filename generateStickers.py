@@ -9,6 +9,7 @@
 from pathlib import Path, PurePath
 from platform import system
 import re
+import shutil
 import subprocess
 import os
 
@@ -84,11 +85,20 @@ class color:
 
 
 #######################################################################
-# initial sample name input
+# set up and check environment
 #######################################################################
+
+# make sure TeX is installed
+if shutil.which("pdflatex") is None:
+    print("pdflatex was not found. Please install LaTeX")
 
 # fix ANSI colors on Windows: https://stackoverflow.com/a/54955094
 os.system("")
+
+
+#######################################################################
+# initial sample name input
+#######################################################################
 
 # keep asking for file names until file exists or user aborts script
 while True:
