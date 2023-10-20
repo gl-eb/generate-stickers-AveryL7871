@@ -20,6 +20,10 @@ This script reads sample names from a txt file (one name per line) and arranges 
 
 ## Changelog
 
+### v2.3.2 (2023-10-20)
+
+- Fix ANSI text formatting not working on Windows
+
 ### v2.3.1 (2023-02-21)
 
 - Bug fix: Update number of stickers to print after skipping stickers
