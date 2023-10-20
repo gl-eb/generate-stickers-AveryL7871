@@ -11,6 +11,7 @@ from platform import system
 import re
 import shutil
 import subprocess
+import sys
 import os
 
 
@@ -90,7 +91,7 @@ class color:
 
 # make sure TeX is installed
 if shutil.which("pdflatex") is None:
-    print("pdflatex was not found. Please install LaTeX")
+    sys.exit("pdflatex was not found. Please install LaTeX")
 
 # fix ANSI colors on Windows: https://stackoverflow.com/a/54955094
 os.system("")
