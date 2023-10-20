@@ -6,13 +6,14 @@
     L7871 labels
 """
 
+import os
 from pathlib import Path, PurePath
 from platform import system
 import re
 import shutil
 import subprocess
 import sys
-import os
+
 from colorama import just_fix_windows_console
 
 
