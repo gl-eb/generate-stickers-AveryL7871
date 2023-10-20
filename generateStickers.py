@@ -6,6 +6,7 @@
     L7871 labels
 """
 
+import argparse
 import os
 from pathlib import Path, PurePath
 from platform import system
@@ -101,16 +102,44 @@ just_fix_windows_console()
 
 
 #######################################################################
+# parse command line arguments
+#######################################################################
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-i", "--interactive", help="run generateStickers "
+                    "in interactive mode, requiring user input for "
+                    "any unset arguments",
+                    action="store_true")
+parser.add_argument("-f", "--input-file", metavar = "FILE",
+                    help="the text file containing one sample name per line")
+parser.add_argument("-o", "--output-file", metavar = "FILE",
+                    help="the name of the output file (default: "
+                    "same as input file)")
+parser.add_argument("-a", "--add-suffixes", help="interactively add "
+                    "suffixes to sample names", action="store_true")
+parser.add_argument("-s", "--skip", type=int, metavar = "INT",
+                    help="number of stickers to skip (default: 0)")
+parser.add_argument("-d", "--date", metavar = "STR",
+                    help="\"today\", \"none\", or a custom date string"
+                    "(default: \"today\")")
+args = parser.parse_args()
+
+
+#######################################################################
 # initial sample name input
 #######################################################################
 
 # keep asking for file names until file exists or user aborts script
 while True:
-    # get input file name from user and store its name in variable
-    input_file = input(f"{color.BOLD + color.DARKCYAN}"
-        "Enter the name of the txt file containing your strain/isolate"
-        " names (one per line) followed by [ENTER] to confirm: "
-        f"{color.END}")
+    # check if input file has been set through cmd line args
+    if args.input_file is None:
+        # get input file name from user and store its name in variable
+        input_file = input(f"{color.BOLD + color.DARKCYAN}"
+            "Enter the name of the txt file containing your strain/"
+            "isolate names (one per line) followed by [ENTER] to "
+            f"confirm: {color.END}")
+    else:
+        input_file = args.input_file
 
     # check if user input includes ".txt" suffix and add it if absent
     if not input_file.endswith(".txt"):
@@ -124,17 +153,22 @@ while True:
               "'cd /Path/to/your/directory' then hit [ENTER]"
               f"{color.END}")
 
-        # ask user whether they wants to type the file name again
-        retry = input(f"{color.BOLD + color.DARKCYAN}"
-            "Do you want to type the file name again? "
-            f"Type \"yes\" (default) or \"no\": \n{color.END}")
-        retry = retry.casefold()
+        # if in interactive mode, ask user whether they want to type
+        # the file name again
+        if args.interactive:
+            retry = input(f"{color.BOLD + color.DARKCYAN}"
+                "Do you want to type the file name again? "
+                f"Type \"yes\" (default) or \"no\": \n{color.END}")
+            retry = retry.casefold()
 
-        # if user wants to try again restart loop otherwise exit script
-        if (retry == "yes" or not retry):
-            continue
+            # if user wants to try again restart loop otherwise exit
+            if (retry == "yes" or not retry):
+                continue
+            else:
+                quit()
         else:
             quit()
+
     else:
         break
 
@@ -150,25 +184,35 @@ print(f"\n{color.BOLD + color.DARKCYAN}"
     f"{names_list[0]}, {names_list[1]} ... "
     f"{names_list[-1]}{color.END}")
 
-# ask user whether they want to continue with the sample names
-input_continue = input(f"{color.BOLD + color.DARKCYAN}Do you want to "
-    "continue with these names? Type \"yes\" (default) or \"no\": "
-    f"{color.END}")
-input_continue = input_continue.casefold()
+# set output file name to input file name
+name_output = input_file
 
-# exit script if user says no, otherwise continue
-if input_continue == "no":
-    quit()
+# set name of output file depending on command line arguments
+if args.output_file is None:
+    if args.interactive:
+        # ask user whether they want to continue with the sample names
+        input_continue = input(f"{color.BOLD + color.DARKCYAN}Do you want to "
+            "continue with these names? Type \"yes\" (default) or \"no\": "
+            f"{color.END}")
+        input_continue = input_continue.casefold()
 
-# query user on output file name
-name_output = input(f"\n{color.BOLD + color.DARKCYAN}Type the name of "
-    "your output file without suffix (e.g. \"file\" instead of "
-    "\"file.txt\"). Press [ENTER] to use the name of the input file "
-    f"(default): {color.END}")
+        # exit script if user says no, otherwise continue
+        if input_continue == "no":
+            quit()
 
-# use input file name as output file name if user returned empty string
-if not name_output:
-    name_output = input_file
+        # query user on output file name
+        name_output = input(f"\n{color.BOLD + color.DARKCYAN}Type the name of "
+            "your output file without suffix (e.g. \"file\" instead of "
+            "\"file.txt\"). Press [ENTER] to use the name of the input file "
+            f"(default): {color.END}")
+
+        # deal with empty answer
+        if not name_output:
+            name_output = input_file
+    else:
+        name_output = input_file
+else:
+    name_output = args.output_file
 
 # set output file path
 path_output = Path(str(Path().absolute()) + "/" + name_output)
@@ -177,12 +221,18 @@ path_output = Path(str(Path().absolute()) + "/" + name_output)
 # construct sample names using suffixes
 #######################################################################
 
-# give user choice whether to add suffixes
-input_suffix = input(f"\n{color.BOLD + color.DARKCYAN}"
-    "Do you want to add suffixes to your sample names? "
-    f"Type \"yes\" or \"no\" (default): {color.END}").casefold()
+if args.add_suffixes:
+    input_suffix = True
+else:
+    if args.interactive:
+        # give user choice whether to add suffixes
+        input_suffix = input(f"\n{color.BOLD + color.DARKCYAN}"
+            "Do you want to add suffixes to your sample names? "
+            f"Type \"yes\" or \"no\" (default): {color.END}").casefold()
+    else:
+        input_suffix = False
 
-if input_suffix == "yes":
+if input_suffix or input_suffix == "yes":
     # print explanation of inner workings once before continuing
     print(f"\n{color.BOLD + color.DARKCYAN}"
         "==========================================")
@@ -206,19 +256,25 @@ if input_suffix == "yes":
         input_suffix_group = input(f"{color.BOLD + color.DARKCYAN}"
             f"\nEnter a group of suffixes: {color.END}")
 
-        # split input into list of words
-        input_suffixes = input_suffix_group.split()
+        # exit suffixing logic if not suffixes provided
+        if not input_suffix_group:
+            print(f"\n{color.BOLD + color.RED}"
+              "No suffix group entered."
+              f"{color.END}")
+        else:
+            # split input into list of words
+            input_suffixes = input_suffix_group.split()
 
-        # reinitiate list so it is empty
-        names_list_new = []
+            # reinitiate list so it is empty
+            names_list_new = []
 
-        # loop through all names and add each suffix
-        for name in names_list_old:
-            for suffix in input_suffixes:
-                names_list_new.append(name + "-" + suffix)
+            # loop through all names and add each suffix
+            for name in names_list_old:
+                for suffix in input_suffixes:
+                    names_list_new.append(name + "-" + suffix)
 
-        # replace old with new list
-        names_list_old = names_list_new
+            # replace old with new list
+            names_list_old = names_list_new
 
         # ask user whether to run through another interation of the
         # suffix loop
@@ -234,7 +290,11 @@ if input_suffix == "yes":
             continue
 
     # set path to which file with suffixed sample names will be written
-    path_suffix = Path(path_output, "_suffix.txt")
+    path_suffix = Path(
+        str(path_output.parent) +
+        "/" + path_output.stem + "_suffix" +
+        path_output.suffix
+    )
 
     # remove old output file and ignore error if it does not exist
     try:
@@ -242,43 +302,63 @@ if input_suffix == "yes":
     except (FileNotFoundError):
         pass
 
-    # write new sample names to new output file
-    with open(path_suffix, "a+") as file_samples:
-        for item in names_list_new:
-            file_samples.write(f"{item}\n")
-
     # replace original list of names with suffixed names
-    names_list = names_list_new
+    try:
+        # write new sample names to new output file
+        with open(path_suffix, "a+") as file_samples:
+            for item in names_list_new:
+                file_samples.write(f"{item}\n")
+
+        names_list = names_list_new
+    except NameError:
+        print(f"\n{color.BOLD + color.RED}"
+              "No suffixes entered. Skipping addition of suffixes"
+              f"{color.END}")
+
 
 #######################################################################
 # customization of output
 #######################################################################
 
-# ask user how many stickers they want to skip (default: 0)
-input_skip = input(f"\n{color.BOLD + color.DARKCYAN}"
-    f"How many stickers do you want to skip, e.g. because they were "
-    f"already used before (default = 0): {color.END}").casefold()
+# set number of skipped stickers depending on combination of args
+if args.skip is None:
+    if args.interactive:
+        # ask user how many stickers they want to skip (default: 0)
+        input_skip = input(f"\n{color.BOLD + color.DARKCYAN}"
+            f"How many stickers do you want to skip, e.g. because they were "
+            f"already used before (default = 0): {color.END}").casefold()
 
-# deal with empty or non-numeric answers
-if not input_skip:
-    input_skip = 0
+        # deal with empty or non-numeric answers
+        if not input_skip:
+            input_skip = 0
+        else:
+            input_skip = int(input_skip)
+    else:
+        input_skip = 0
 else:
-    input_skip = int(input_skip)
+    input_skip = args.skip
 
 # prepend empty items to list of names for each sticker to skip
 names_list = ([None] * input_skip) + names_list
 names_number = len(names_list)
 
-# give user choice whether to print date and in which format
-print(f"""{color.BOLD + color.DARKCYAN}
-Do you want to print a date to the second sticker row?
-    - For today's date in yyyy-mm-dd format (default),
-      leave empty or enter \"today\"
-    - Type \"none\" to not print anything to the date field
-    - Any other input will be printed verbatim as the date,
-      e.g. \"2023\""""
-)
-input_date = input(f"Your choice: {color.END}").casefold()
+# set date depending on combination of args
+if args.date is None:
+    if args.interactive:
+        # give user choice whether to print date and in which format
+        print(f"""{color.BOLD + color.DARKCYAN}
+        Do you want to print a date to the second sticker row?
+            - For today's date in yyyy-mm-dd format (default),
+            leave empty or enter \"today\"
+            - Type \"none\" to not print anything to the date field
+            - Any other input will be printed verbatim as the date,
+            e.g. \"2023\""""
+        )
+        input_date = input(f"Your choice: {color.END}")
+    else:
+        input_date = "today"
+else:
+    input_date = args.date
 
 # set latex_date variable depending on user's date choice
 match input_date:
