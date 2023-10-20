@@ -89,9 +89,10 @@ class color:
 # set up and check environment
 #######################################################################
 
-# make sure TeX is installed
-if shutil.which("pdflatex") is None:
-    sys.exit("pdflatex was not found. Please install LaTeX")
+# make sure LaTeX is installed
+exec_latex = "pdflatex"
+if shutil.which(exec_latex) is None:
+    sys.exit(exec_latex + " was not found. Please install LaTeX")
 
 # fix ANSI colors on Windows: https://stackoverflow.com/a/54955094
 os.system("")
@@ -359,8 +360,8 @@ with open(path_latex, "a+") as file_output:
     # reenable command line output and end document
     file_output.write("\\scrollmode\n\\end{document}")
 
-# call pdflatex to typeset .tex file
-subprocess.run(["pdflatex", path_latex], stdout=subprocess.DEVNULL)
+# call LaTeX executable to typeset .tex file
+subprocess.run([exec_latex, path_latex], stdout=subprocess.DEVNULL)
 
 # open resulting pdf file in an OS-dependent manner
 if system() == 'Darwin':
