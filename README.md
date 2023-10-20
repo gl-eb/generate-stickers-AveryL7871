@@ -4,14 +4,14 @@ This script reads sample names from a txt file (one name per line) and arranges 
 
 ## Requirements
 
-- A UNIX type **command-line interface** (e.g. Terminal on macOS)
-- **Python 3.10** or higher (confirmed to work on 3.11)
+- This script was developed primarily for a UNIX type **command-line interface** (e.g. Terminal on macOS), but it should also work on Windows
+- **Python 3.10** or higher (confirmed to work on 3.11, 3.12)
 - **LaTeX** (e.g. TeX Live/MacTeX for macOS or any other TeX distribution). If you are using a small TeX distribution such as BasicTeX, make sure you have the following packages installed:
   - booktabs
   - datetime2
   - moresize
 
-## How to use
+## How to use (UNIX)
 
 1. Open your command-line interface of choice
 2. Navigate to the folder that you want the output pdf to be in using the command `cd path/to/your/folder`
