@@ -1,6 +1,6 @@
 # Changelog
 
-## develop
+## v2.4.0 (2023-10-23)
 
 - Add command line arguments allowing to run generateStickers in non-interactively
 - Check if LaTeX is installed and available. Exit script if this is not the case
