@@ -23,7 +23,7 @@
 - Print empty sticker if index is out of bound. This ensures that table rows are filled up and fixes a bug that occured when the number of stickers was not a multiple of 7
 - Moved bigger chunks of LaTeX into their own files located in the `resources` folder
 - Fix bug which caused empty lines in the sample names file to crash the script
-- Escape a bigger set of special characters in LaTeX output. Function adapted from ![](https://stackoverflow.com/a/25875504)
+- Escape a bigger set of special characters in LaTeX output. Function adapted from <https://stackoverflow.com/a/25875504>
 - Allow reading lines from file with non-unicode encoding
 - Did some code refactoring and cleaning
 
