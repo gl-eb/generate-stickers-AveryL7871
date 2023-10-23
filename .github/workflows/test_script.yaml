@@ -2,8 +2,8 @@ name: Test Script
 
 on:
   push:
-    branches: [main]
-    paths: ["**.py"]
+    branches: [main, ci]
+    paths: ["**.py", "**.yaml"]
   pull_request:
     branches: [main, develop]
 
