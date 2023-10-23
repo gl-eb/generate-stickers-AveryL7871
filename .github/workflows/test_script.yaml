@@ -2,10 +2,8 @@ name: Test Script
 
 on:
   push:
-    branches: [main, ci]
+    branches: [ci]
     paths: ["**.py", "**.yaml"]
-  pull_request:
-    branches: [main, develop]
 
 jobs:
   test-python:
