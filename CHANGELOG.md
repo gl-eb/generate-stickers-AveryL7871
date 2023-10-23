@@ -3,6 +3,7 @@
 ## v2.4.0 (2023-10-23)
 
 - Add command line arguments allowing to run generateStickers in non-interactively
+  A warning message has also been added when running the script without any arguments
 - Check if LaTeX is installed and available. Exit script if this is not the case
 - Open PDF using platform-specific command
 - Use [Colorama](https://github.com/tartley/colorama) for cross-platform text formatting

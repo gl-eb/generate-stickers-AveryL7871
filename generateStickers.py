@@ -124,6 +124,17 @@ parser.add_argument("-d", "--date", metavar = "STR",
                     "(default: \"today\")")
 args = parser.parse_args()
 
+# print warning about command-line arguments if none are set
+if args.input_file is None and not args.interactive:
+    print(f"{color.BOLD + color.YELLOW}"
+          "As of version 2.4.0 generateStickers supports command-line "
+          "arguments. Please run the script with the following command for "
+          "a fully interactive experience:"
+          "\n\npython generateStickers.py --interactive"
+          "\n\nMore information can be found at "
+          "https://github.com/gl-eb/generate-stickers-AveryL7871 or by running"
+          "\n\npython generateStickers.py --help"
+          f"{color.END}\n")
 
 #######################################################################
 # initial sample name input
