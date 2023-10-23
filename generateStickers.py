@@ -288,7 +288,7 @@ else:
     else:
         input_suffix = False
 
-if input_suffix or input_suffix == "yes":
+if input_suffix is True or input_suffix == "yes":
     # print explanation of inner workings once before continuing
     print(
         f"\n{color.BOLD + color.DARKCYAN}"
