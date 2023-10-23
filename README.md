@@ -11,6 +11,9 @@ This script reads sample names from a txt file (one name per line) and arranges 
   - booktabs
   - datetime2
   - moresize
+- You will need a **plain text file** (with the `.txt` suffix) containing one sample name per line.
+  Sample names should ideally be 30 characters long at most.
+  Longer names could mess up the layout and prevent proper printing on the sticker sheet
 
 ## User Guide (UNIX)
 
@@ -78,7 +81,9 @@ One use case for suffixing is a set of microbial strains of cell lines that went
 - The first suffix group could then be the treatment: Control, Treatment1, Treatment2
 - Numbered replicate lines would be suffix group number two: 1, 2, 3
 
-The resulting stickers would then be Strain1-Control-1, Strain1-Control-2, Strain1-Control-3, Strain1-Treatment1-1, ... , Strain3-Treatment2-3
+The resulting stickers would then be `Strain1-Control-1, Strain1-Control-2, Strain1-Control-3, Strain1-Treatment1-1, ... , Strain3-Treatment2-3`.
+Please keep in mind that adding suffixes can push sample names above the recomended limit of 30 characters.
+Check the resulting PDF carefully before printing
 
 ```bash
 python generateStickers.py -f <path/to/input_file> -a

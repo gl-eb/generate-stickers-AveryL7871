@@ -38,12 +38,15 @@ def return_sticker(x):
             # if sticker is long let latex do the word splitting
             if len(sticker) > 30:
                 sticker = sticker + " \\DATE"
+                overlength = True
             else:
                 sticker = sticker + "\\par\\DATE"
         else:
             # add newline to preserve table formatting w/o date
             if len(sticker) < 31:
                 sticker = sticker + "\\par"
+            elif len(sticker) > 60:
+                overlength = True
     return sticker
 
 # function to escape characters for LaTeX output
@@ -392,6 +395,9 @@ except (FileNotFoundError):
 # (including skipped ones)
 latex_pages = (names_number // 189) + 1
 
+# initiate variable to track whether any sample names are overlenght
+overlength = False
+
 # create .tex file and write to it
 with open(path_latex, "a+") as file_output:
     # write contents of preamble file to output file
@@ -443,6 +449,13 @@ with open(path_latex, "a+") as file_output:
         file_output.write("\\end{tabularx}\n\n")
     # reenable command line output and end document
     file_output.write("\\scrollmode\n\\end{document}")
+
+if overlength:
+    print(f"\n{color.BOLD + color.RED}"
+        "Warning: Some of the sample names are overly long, which might "
+        "disrupt the final layout. Please inspect the resulting PDF carefully "
+        "before printing"
+        f"{color.END}")
 
 # call LaTeX executable to typeset .tex file
 subprocess.run([exec_latex, path_latex], stdout=subprocess.DEVNULL)
