@@ -464,8 +464,9 @@ latex_pages = (names_number // 189) + 1
 # check if any sample names are above the maximum recommended length
 overlength = False
 for name in names_list:
-    if len(name) > 30:
-        overlength = True
+    if name is not None:
+        if len(name) > 30:
+            overlength = True
 
 if overlength:
     print(
