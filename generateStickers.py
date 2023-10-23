@@ -129,10 +129,12 @@ args = parser.parse_args()
 # initial sample name input
 #######################################################################
 
+retry = "no"
+
 # keep asking for file names until file exists or user aborts script
 while True:
     # check if input file has been set through cmd line args
-    if args.input_file is None:
+    if args.input_file is None or retry == "yes":
         # get input file name from user and store its name in variable
         input_file = input(f"{color.BOLD + color.DARKCYAN}"
             "Enter the name of the txt file containing your strain/"
