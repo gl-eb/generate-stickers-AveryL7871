@@ -1,9 +1,21 @@
-""" Version 2.4.0 by Gleb Ebert
+""" generateStickers lays out sample names on a L7871 sticker sheet
+
+    v2.4.0
 
     This script reads sample names from a list, presents the user with
     a couple of options to modify the names and arranges them on a
     sheet of A4 paper so that it can be printed on Avery-Zweckform
     L7871 labels
+
+    The script can be used in interactive mode:
+
+    python generateStickers.py --interactive
+
+    Learn more about command-line options by executing
+
+    python generateStickers.py --help
+
+    See also https://github.com/gl-eb/generate-stickers-AveryL7871
 """
 
 import argparse
