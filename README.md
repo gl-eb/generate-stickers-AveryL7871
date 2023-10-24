@@ -37,6 +37,23 @@ Replace `generateStickers.py` with `path/to/script/generateStickers.py` if the s
 python generateStickers.py
 ```
 
+### Aliases
+
+You can also create an alias for generateStickers in your shell.
+If you are using bash, add it to the `~/.bashrc` file in your home directory.
+The equivalent file for zsh is `~/.zshrc`.
+The following alias will change the current directory to one where you want your sticker files to live and then calls generateStickers from a subdirectory.
+
+```bash
+alias avery='cd ~/path/to/input_output_directory/ && python ./generate-stickers-AveryL7871/generateStickers.py'
+```
+
+You can even use the alias in combination with command-line options
+
+```bash
+avery -i
+```
+
 ### Without Command-Line Options
 
 Executing generateStickers without any command-line options will ask the user to interactively provide the minimum set of options necessary.
