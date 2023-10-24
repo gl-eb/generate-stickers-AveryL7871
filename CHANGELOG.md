@@ -1,5 +1,7 @@
 # Changelog
 
+## development version
+
 ## v2.4.0
 
 - Add command line arguments allowing to run generateStickers in non-interactively
