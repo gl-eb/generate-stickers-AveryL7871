@@ -1,4 +1,8 @@
 [tool.ruff]
-
 # Limit line length to 79 characters
 line-length = 79
+
+[tool.pyright]
+reportMissingImports = true
+
+pythonVersion = "3.10"
