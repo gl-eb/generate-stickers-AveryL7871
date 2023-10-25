@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 """ generateStickers lays out sample names on a L7871 sticker sheet
 
     v2.4.0.9000
