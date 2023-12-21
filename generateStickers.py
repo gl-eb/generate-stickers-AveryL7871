@@ -227,9 +227,9 @@ while True:
             if retry == "yes" or not retry:
                 continue
             else:
-                quit()
+                sys.exit()
         else:
-            quit()
+            sys.exit()
 
     else:
         break
@@ -264,7 +264,7 @@ if args.output_file is None:
 
         # exit script if user says no, otherwise continue
         if input_continue == "no":
-            quit()
+            sys.exit()
 
         # query user on output file name
         name_output = input(
