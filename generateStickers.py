@@ -22,15 +22,14 @@
 
 import argparse
 import os
-from pathlib import Path, PurePath
-from platform import system
 import re
 import shutil
 import subprocess
 import sys
+from pathlib import Path, PurePath
+from platform import system
 
 from colorama import just_fix_windows_console
-
 
 #######################################################################
 # define functions and classes
