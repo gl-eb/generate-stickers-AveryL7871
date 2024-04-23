@@ -319,6 +319,7 @@ if input_suffix is True or input_suffix == "yes":
     )
 
     # initiate list with names to be modified
+    names_list_new = []
     names_list_old = names_list
 
     # keep asking for suffixes and adding them to sample names
@@ -551,6 +552,6 @@ subprocess.run([exec_latex, path_latex], stdout=subprocess.DEVNULL)
 if system() == "Darwin":
     subprocess.run(["open", path_latex.with_suffix(".pdf")])
 elif system() == "Windows":
-    os.startfile(path_latex.with_suffix(".pdf"))
+    os.startfile(path_latex.with_suffix(".pdf"))  # type: ignore
 else:
     subprocess.run(["xdg-open", path_latex.with_suffix(".pdf")])

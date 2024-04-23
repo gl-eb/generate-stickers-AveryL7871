@@ -3,6 +3,4 @@
 line-length = 79
 
 [tool.pyright]
-reportMissingImports = true
-
 pythonVersion = "3.10"
