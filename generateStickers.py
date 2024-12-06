@@ -1,6 +1,8 @@
+#!/usr/bin/env python3
+
 """ generateStickers lays out sample names on a L7871 sticker sheet
 
-    v2.4.0
+    v2.5.0
 
     This script reads sample names from a list, presents the user with
     a couple of options to modify the names and arranges them on a
@@ -20,15 +22,14 @@
 
 import argparse
 import os
-from pathlib import Path, PurePath
-from platform import system
 import re
 import shutil
 import subprocess
 import sys
+from pathlib import Path, PurePath
+from platform import system
 
 from colorama import just_fix_windows_console
-
 
 #######################################################################
 # define functions and classes
@@ -110,7 +111,7 @@ class color:
 #######################################################################
 
 # make sure LaTeX is installed
-exec_latex = "pdflatex"
+exec_latex = "xelatex"
 if shutil.which(exec_latex) is None:
     sys.exit(exec_latex + " was not found. Please install LaTeX")
 
@@ -159,7 +160,7 @@ parser.add_argument(
     "-d",
     "--date",
     metavar="STR",
-    help="\"today\", \"none\", or a custom date string (default: \"today\")",
+    help='"today", "none", or a custom date string (default: "today")',
 )
 args = parser.parse_args()
 
@@ -207,7 +208,7 @@ while True:
             f"\n{color.BOLD + color.RED}File {input_file} not found. "
             "Make sure file is present in your working directory:\n"
             f"{Path().cwd()}\nTo change your working directory type "
-            "\"cd /Path/to/your/directory\" then hit [ENTER]"
+            '"cd /Path/to/your/directory" then hit [ENTER]'
             f"{color.END}"
         )
 
@@ -217,7 +218,7 @@ while True:
             retry = input(
                 f"{color.BOLD + color.DARKCYAN}"
                 "Do you want to type the file name again? "
-                f"Type \"yes\" (default) or \"no\": \n{color.END}"
+                f'Type "yes" (default) or "no": \n{color.END}'
             )
             retry = retry.casefold()
 
@@ -225,15 +226,15 @@ while True:
             if retry == "yes" or not retry:
                 continue
             else:
-                quit()
+                sys.exit()
         else:
-            quit()
+            sys.exit()
 
     else:
         break
 
 # read lines from file, filter out empty ones and convert to list
-with open(input_file, "r", encoding="unicode_escape") as file:
+with open(input_file, "r") as file:
     names_list = list(filter(None, (line.rstrip() for line in file)))
 
 names_number = len(names_list)
@@ -255,19 +256,19 @@ if args.output_file is None:
         # ask user whether they want to continue with the sample names
         input_continue = input(
             f"{color.BOLD + color.DARKCYAN}Do you want to continue with these "
-            "names? Type \"yes\" (default) or \"no\": "
+            'names? Type "yes" (default) or "no": '
             f"{color.END}"
         )
         input_continue = input_continue.casefold()
 
         # exit script if user says no, otherwise continue
         if input_continue == "no":
-            quit()
+            sys.exit()
 
         # query user on output file name
         name_output = input(
             f"\n{color.BOLD + color.DARKCYAN}Type the name of your output "
-            "file without suffix (e.g. \"file\" instead of \"file.txt\"). "
+            'file without suffix (e.g. "file" instead of "file.txt"). '
             "Press [ENTER] to use the name of the input file (default): "
             f"{color.END}"
         )
@@ -295,7 +296,7 @@ else:
         input_suffix = input(
             f"\n{color.BOLD + color.DARKCYAN}"
             "Do you want to add suffixes to your sample names? "
-            f"Type \"yes\" or \"no\" (default): {color.END}"
+            f'Type "yes" or "no" (default): {color.END}'
         ).casefold()
     else:
         input_suffix = False
@@ -309,7 +310,7 @@ if input_suffix is True or input_suffix == "yes":
     print(
         "\nIn the following part of the script you will supply groups of "
         "suffixes (e.g. treatment names or replicate numbers) separated by "
-        "spaces: \"CTRL TREAT1 TREAT2 TREAT3\". Each suffix will be combined "
+        'spaces: "CTRL TREAT1 TREAT2 TREAT3". Each suffix will be combined '
         "with each sample name (e.g. Strain1-TREAT1, Strain1-TREAT2 ... "
         "Strain10-TREAT3). You will also have the opportunity to supply "
         "multiple suffix groups one after the other (the result of this would "
@@ -318,6 +319,7 @@ if input_suffix is True or input_suffix == "yes":
     )
 
     # initiate list with names to be modified
+    names_list_new = []
     names_list_old = names_list
 
     # keep asking for suffixes and adding them to sample names
@@ -355,7 +357,7 @@ if input_suffix is True or input_suffix == "yes":
         input_suffix_continue = input(
             f"\n{color.BOLD + color.DARKCYAN}"
             "Do you want to add another group of suffixes? "
-            f"Type \"yes\" or \"no\" (default): {color.END}"
+            f'Type "yes" or "no" (default): {color.END}'
         ).casefold()
 
         # if user answers anything other than yes break out of loop,
@@ -550,6 +552,6 @@ subprocess.run([exec_latex, path_latex], stdout=subprocess.DEVNULL)
 if system() == "Darwin":
     subprocess.run(["open", path_latex.with_suffix(".pdf")])
 elif system() == "Windows":
-    os.startfile(path_latex.with_suffix(".pdf"))
+    os.startfile(path_latex.with_suffix(".pdf"))  # type: ignore
 else:
     subprocess.run(["xdg-open", path_latex.with_suffix(".pdf")])
