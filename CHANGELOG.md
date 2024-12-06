@@ -1,5 +1,7 @@
 # Changelog
 
+## development version
+
 ## v2.6.0
 
 - Process date in Python instead of TeX. This removes the requirement fo the datetime2 package
