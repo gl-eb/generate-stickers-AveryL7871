@@ -2,7 +2,7 @@
 
 """ generateStickers lays out sample names on a L7871 sticker sheet
 
-    v2.5.0.9000
+    v2.6.0
 
     This script reads sample names from a list, presents the user with
     a couple of options to modify the names and arranges them on a
