@@ -40,7 +40,7 @@ from colorama import just_fix_windows_console
 def return_sticker(x):
     # return empty sticker
     if x >= len(names_list) or names_list[x] is None:
-        sticker = "\\phantom{empty sticker}\\par"
+        sticker = "\\phantom{empty}\\par\\phantom{sticker}"
     else:
         sticker = tex_escape(names_list[x])
         # reduce font size depending on how long text is

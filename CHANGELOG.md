@@ -2,6 +2,8 @@
 
 ## development version
 
+- Prevent skipped stickers collapsing into a single line
+
 ## v2.5.0
 
 - Use xelatex executable instead of pdflatex
