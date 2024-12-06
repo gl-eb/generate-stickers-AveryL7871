@@ -2,6 +2,7 @@
 
 ## development version
 
+- Process date in Python instead of TeX. This removes the requirement fo the datetime2 package
 - Improve printing of sample names to command line (fixes #16)
 - Prevent skipped stickers collapsing into a single line
 

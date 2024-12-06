@@ -26,6 +26,7 @@ import re
 import shutil
 import subprocess
 import sys
+from datetime import date
 from pathlib import Path, PurePath
 from platform import system
 
@@ -48,16 +49,13 @@ def return_sticker(x):
             sticker = "{\\tiny " + sticker + "}"
         elif len(sticker) > 15:
             sticker = "{\\ssmall " + sticker + "}"
-        if input_date != "none":
-            # if sticker is long let latex do the word splitting
-            if len(sticker) > 30:
-                sticker = sticker + " \\DATE"
-            else:
-                sticker = sticker + "\\par\\DATE"
+
+        # if sticker is long let latex do the word splitting,
+        # otherwise put date on new line
+        if len(sticker) > 30:
+            sticker = sticker + str_date
         else:
-            # add newline to preserve table formatting w/o date
-            if len(sticker) < 31:
-                sticker = sticker + "\\par"
+            sticker = sticker + f"\\par {str_date}"
     return sticker
 
 
@@ -457,14 +455,14 @@ if args.date is None:
 else:
     input_date = args.date
 
-# set latex_date variable depending on user's date choice
+# set str_date variable depending on user's date choice
 match input_date:
-    case "today" | "" | "none":
-        latex_date = "\\newcommand{\\DATE}{\\today}"
+    case "today":
+        str_date = date.today().isoformat()
     case "none":
-        latex_date = "\\newcommand{\\DATE}{}"
+        str_date = "\\phantom{empty date}"
     case _:
-        latex_date = "\\newcommand{\\DATE}{" + f"{input_date}" + "}"
+        str_date = input_date
 
 
 #######################################################################
@@ -509,9 +507,6 @@ with open(path_latex, "a+") as file_output:
     with open(path_preamble, "r") as file_preamble:
         for line in file_preamble:
             file_output.write(line)
-
-    # write date macro to output file
-    file_output.write(latex_date)
 
     # write contents of before_header file to output file
     with open(path_before_body, "r") as file_before_body:

@@ -9,7 +9,6 @@ This script reads sample names from a txt file (one name per line) and arranges 
   - [Colorama](https://github.com/tartley/colorama)
 - **LaTeX** (e.g. TeX Live/MacTeX for macOS or any other TeX distribution). If you are using a small TeX distribution such as BasicTeX, make sure you have the following packages installed:
   - booktabs
-  - datetime2
   - moresize
 - You will need a **plain text file** (with the `.txt` suffix), ideally UTF-8 encoded, containing one sample name per line.
   Sample names should ideally be 30 characters long at most.
