@@ -111,7 +111,7 @@ class color:
 #######################################################################
 
 # make sure LaTeX is installed
-exec_latex = "pdflatex"
+exec_latex = "xelatex"
 if shutil.which(exec_latex) is None:
     sys.exit(exec_latex + " was not found. Please install LaTeX")
 

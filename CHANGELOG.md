@@ -2,6 +2,7 @@
 
 ## development version
 
+- Use xelatex executable instead of pdflatex
 - Refactor code
 
 ## v2.4.0
