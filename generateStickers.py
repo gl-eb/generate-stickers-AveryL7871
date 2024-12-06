@@ -2,7 +2,7 @@
 
 """ generateStickers lays out sample names on a L7871 sticker sheet
 
-    v2.5.0
+    v2.6.0
 
     This script reads sample names from a list, presents the user with
     a couple of options to modify the names and arranges them on a
@@ -26,6 +26,7 @@ import re
 import shutil
 import subprocess
 import sys
+from datetime import date
 from pathlib import Path, PurePath
 from platform import system
 
@@ -40,7 +41,7 @@ from colorama import just_fix_windows_console
 def return_sticker(x):
     # return empty sticker
     if x >= len(names_list) or names_list[x] is None:
-        sticker = "\\phantom{empty sticker}\\par"
+        sticker = "\\phantom{empty}\\par\\phantom{sticker}"
     else:
         sticker = tex_escape(names_list[x])
         # reduce font size depending on how long text is
@@ -48,16 +49,13 @@ def return_sticker(x):
             sticker = "{\\tiny " + sticker + "}"
         elif len(sticker) > 15:
             sticker = "{\\ssmall " + sticker + "}"
-        if input_date != "none":
-            # if sticker is long let latex do the word splitting
-            if len(sticker) > 30:
-                sticker = sticker + " \\DATE"
-            else:
-                sticker = sticker + "\\par\\DATE"
+
+        # if sticker is long let latex do the word splitting,
+        # otherwise put date on new line
+        if len(sticker) > 30:
+            sticker = sticker + str_date
         else:
-            # add newline to preserve table formatting w/o date
-            if len(sticker) < 31:
-                sticker = sticker + "\\par"
+            sticker = sticker + f"\\par {str_date}"
     return sticker
 
 
@@ -90,6 +88,18 @@ def tex_escape(text):
     )
     return regex.sub(lambda match: conv[match.group()], text)
 
+# print some of the sample names
+def print_samples():
+    message =  f"{names_list[0]}"
+    if names_number > 1:
+        message = message + f", {names_list[1]}"
+    if names_number > 3:
+        message = message + " ... "
+    elif (names_number == 3):
+        message = message + ", "
+    if names_number > 2:
+        message = message + f"{names_list[-1]}"
+    return message
 
 # create class with objects to format console output
 # https://stackoverflow.com/a/287944
@@ -243,8 +253,8 @@ names_number = len(names_list)
 print(
     f"\n{color.BOLD + color.DARKCYAN}"
     f"Your file contains {names_number} names:\n"
-    f"{names_list[0]}, {names_list[1]} ... "
-    f"{names_list[-1]}{color.END}"
+    f"{print_samples()}"
+    f"{color.END}"
 )
 
 # set output file name to input file name
@@ -445,14 +455,14 @@ if args.date is None:
 else:
     input_date = args.date
 
-# set latex_date variable depending on user's date choice
+# set str_date variable depending on user's date choice
 match input_date:
-    case "today" | "" | "none":
-        latex_date = "\\newcommand{\\DATE}{\\today}"
+    case "today":
+        str_date = date.today().isoformat()
     case "none":
-        latex_date = "\\newcommand{\\DATE}{}"
+        str_date = "\\phantom{empty date}"
     case _:
-        latex_date = "\\newcommand{\\DATE}{" + f"{input_date}" + "}"
+        str_date = input_date
 
 
 #######################################################################
@@ -473,7 +483,10 @@ except FileNotFoundError:
 
 # calculate number of pages necessary to fit all stickers
 # (including skipped ones)
-latex_pages = (names_number // 189) + 1
+latex_pages = names_number // 189
+# add page for remaining stickers
+if names_number % 189 > 0:
+    latex_pages = latex_pages + 1
 
 # check if any sample names are above the maximum recommended length
 overlength = False
@@ -497,9 +510,6 @@ with open(path_latex, "a+") as file_output:
     with open(path_preamble, "r") as file_preamble:
         for line in file_preamble:
             file_output.write(line)
-
-    # write date macro to output file
-    file_output.write(latex_date)
 
     # write contents of before_header file to output file
     with open(path_before_body, "r") as file_before_body:

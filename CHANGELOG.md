@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.6.0
+
+- Process date in Python instead of TeX. This removes the requirement fo the datetime2 package
+- Improve printing of sample names to command line (fixes #16)
+- Prevent skipped stickers collapsing into a single line
+- Prevent an empty page at the end of the document in case stickers exactly fill up one or multiple pages
+
 ## v2.5.0
 
 - Use xelatex executable instead of pdflatex
