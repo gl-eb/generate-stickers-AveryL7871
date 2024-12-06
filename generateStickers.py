@@ -483,7 +483,10 @@ except FileNotFoundError:
 
 # calculate number of pages necessary to fit all stickers
 # (including skipped ones)
-latex_pages = (names_number // 189) + 1
+latex_pages = names_number // 189
+# add page for remaining stickers
+if names_number % 189 > 0:
+    latex_pages = latex_pages + 1
 
 # check if any sample names are above the maximum recommended length
 overlength = False
