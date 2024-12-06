@@ -1,6 +1,6 @@
 # Changelog
 
-## development version
+## v2.5.0
 
 - Use xelatex executable instead of pdflatex
 - Let locale dictate input encoding (usually UTF-8 on Unix, ANSI on Windows)
