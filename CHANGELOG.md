@@ -2,6 +2,7 @@
 
 ## development version
 
+- Improve printing of sample names to command line (fixes #16)
 - Prevent skipped stickers collapsing into a single line
 
 ## v2.5.0

@@ -90,6 +90,18 @@ def tex_escape(text):
     )
     return regex.sub(lambda match: conv[match.group()], text)
 
+# print some of the sample names
+def print_samples():
+    message =  f"{names_list[0]}"
+    if names_number > 1:
+        message = message + f", {names_list[1]}"
+    if names_number > 3:
+        message = message + " ... "
+    elif (names_number == 3):
+        message = message + ", "
+    if names_number > 2:
+        message = message + f"{names_list[-1]}"
+    return message
 
 # create class with objects to format console output
 # https://stackoverflow.com/a/287944
@@ -243,8 +255,8 @@ names_number = len(names_list)
 print(
     f"\n{color.BOLD + color.DARKCYAN}"
     f"Your file contains {names_number} names:\n"
-    f"{names_list[0]}, {names_list[1]} ... "
-    f"{names_list[-1]}{color.END}"
+    f"{print_samples()}"
+    f"{color.END}"
 )
 
 # set output file name to input file name
