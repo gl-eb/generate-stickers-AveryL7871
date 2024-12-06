@@ -3,7 +3,9 @@
 ## development version
 
 - Use xelatex executable instead of pdflatex
+- Let locale dictate input encoding (usually UTF-8 on Unix, ANSI on Windows)
 - Refactor code
+- Bump minimum Python version to 3.11 (from 3.10)
 
 ## v2.4.0
 
