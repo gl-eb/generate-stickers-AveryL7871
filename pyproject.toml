@@ -1,6 +1,18 @@
-[tool.ruff]
-# Limit line length to 79 characters
-line-length = 79
+[project]
+name = "generate-labels"
+version = "3.0.0"
+description = "This script reads sample names from a txt file (one name per line) and arranges them on a sheet of A4 paper so that they can be printed on Avery-Zweckform L7871 labels"
+readme = "README.md"
+authors = [
+    { name = "Gleb Ebert", email = "dev@gl-eb.me" }
+]
+license = {file = "LICENSE"}
+requires-python = ">=3.13"
+dependencies = []
 
-[tool.pyright]
-pythonVersion = "3.10"
+[project.scripts]
+generate-labels = "generate_labels:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
