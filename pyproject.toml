@@ -13,7 +13,7 @@ dependencies = [
 ]
 
 [project.scripts]
-generate-labels = "generate_labels:main"
+generate-labels = "generate_labels.generate_labels:main"
 
 [build-system]
 requires = ["hatchling"]
