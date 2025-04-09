@@ -16,7 +16,7 @@ from colorama import just_fix_windows_console
 
 
 # function that returns sticker content
-def return_sticker(x):
+def return_sticker(x, names_list, str_date):
     # return empty sticker
     if x >= len(names_list) or names_list[x] is None:
         sticker = "\\phantom{empty}\\par\\phantom{sticker}"
@@ -67,7 +67,7 @@ def tex_escape(text):
     return regex.sub(lambda match: conv[match.group()], text)
 
 # print some of the sample names
-def print_samples():
+def print_samples(names_list, names_number):
     message =  f"{names_list[0]}"
     if names_number > 1:
         message = message + f", {names_list[1]}"
@@ -232,7 +232,7 @@ def main():
     print(
         f"\n{color.BOLD + color.DARKCYAN}"
         f"Your file contains {names_number} names:\n"
-        f"{print_samples()}"
+        f"{print_samples(names_list, names_number)}"
         f"{color.END}"
     )
 
@@ -514,9 +514,11 @@ def main():
                 for position in range(7):
                     # print unprinted sample names
                     if position < 6:
-                        file_output.write(f"{return_sticker(n)} & ")
+                        file_output.write(
+                            f"{return_sticker(n, names_list, str_date)} & "
+                        )
                     elif position == 6:
-                        file_output.write(f"{return_sticker(n)}")
+                        file_output.write(f"{return_sticker(n, names_list, str_date)}")
                     else:
                         break
                     n += 1
