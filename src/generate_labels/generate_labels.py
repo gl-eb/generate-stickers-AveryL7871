@@ -5,7 +5,7 @@ import shutil
 import subprocess
 import sys
 from datetime import date
-from pathlib import Path, PurePath
+from pathlib import Path
 from platform import system
 
 from colorama import just_fix_windows_console
@@ -449,9 +449,8 @@ def main():
     #######################################################################
 
     # set paths to typesetting and output files
-    dir_avery = PurePath(__file__).parent
-    path_preamble = Path(dir_avery, "resources", "preamble.tex")
-    path_before_body = Path(dir_avery, "resources", "before_body.tex")
+    path_preamble = Path("resources", "preamble.tex")
+    path_before_body = Path("resources", "before_body.tex")
     path_latex = path_output.with_suffix(".tex")
 
     # remove old output file if one already exist
