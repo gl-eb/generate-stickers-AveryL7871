@@ -10,74 +10,6 @@ from platform import system
 
 from colorama import just_fix_windows_console
 
-#######################################################################
-# define functions and classes
-#######################################################################
-
-
-# function that returns sticker content
-def return_sticker(x, names_list, str_date):
-    # return empty sticker
-    if x >= len(names_list) or names_list[x] is None:
-        sticker = "\\phantom{empty}\\par\\phantom{sticker}"
-    else:
-        sticker = tex_escape(names_list[x])
-        # reduce font size depending on how long text is
-        if len(sticker) > 20:
-            sticker = "{\\tiny " + sticker + "}"
-        elif len(sticker) > 15:
-            sticker = "{\\ssmall " + sticker + "}"
-
-        # if sticker is long let latex do the word splitting,
-        # otherwise put date on new line
-        if len(sticker) > 30:
-            sticker = sticker + str_date
-        else:
-            sticker = sticker + f"\\par {str_date}"
-    return sticker
-
-
-# function to escape characters for LaTeX output
-# https://stackoverflow.com/a/25875504
-def tex_escape(text):
-    """
-    :param text: a plain text message
-    :return: the message escaped to appear correctly in LaTeX
-    """
-    conv = {
-        "&": r"\&",
-        "%": r"\%",
-        "$": r"\$",
-        "#": r"\#",
-        "_": r"\_",
-        "{": r"\{",
-        "}": r"\}",
-        "~": r"\textasciitilde{}",
-        "^": r"\^{}",
-        "\\": r"\textbackslash{}",
-        "<": r"\textless{}",
-        ">": r"\textgreater{}",
-    }
-    regex = re.compile(
-        "|".join(
-            re.escape(str(key))
-            for key in sorted(conv.keys(), key=lambda item: -len(item))
-        )
-    )
-    return regex.sub(lambda match: conv[match.group()], text)
-
-# print some of the sample names
-def print_samples(names_list, names_number):
-    message =  f"{names_list[0]}"
-    if names_number > 1:
-        message = message + f", {names_list[1]}"
-    if names_number > 3:
-        message = message + " ... "
-    elif (names_number == 3):
-        message = message + ", "
-    if names_number > 2:
-        message = message + f"{names_list[-1]}"
-    return message
 
 def main():
     # create class with objects to format console output
@@ -94,7 +26,6 @@ def main():
         UNDERLINE = "\033[4m"
         END = "\033[0m"
 
-
     #######################################################################
     # set up and check environment
     #######################################################################
@@ -106,7 +37,6 @@ def main():
 
     # fix ANSI text formatting on Windows
     just_fix_windows_console()
-
 
     #######################################################################
     # parse command line arguments
@@ -293,8 +223,7 @@ def main():
     if input_suffix is True or input_suffix == "yes":
         # print explanation of inner workings once before continuing
         print(
-            f"\n{color.BOLD + color.DARKCYAN}"
-            "=========================================="
+            f"\n{color.BOLD + color.DARKCYAN}=========================================="
         )
         print(
             "\nIn the following part of the script you will supply groups of "
@@ -316,16 +245,12 @@ def main():
         while True:
             # ask for group of suffixes
             input_suffix_group = input(
-                f"{color.BOLD + color.DARKCYAN}"
-                f"\nEnter a group of suffixes: {color.END}"
+                f"{color.BOLD + color.DARKCYAN}\nEnter a group of suffixes: {color.END}"
             )
 
             # exit suffixing logic if not suffixes provided
             if not input_suffix_group:
-                print(
-                    f"\n{color.BOLD + color.RED}No suffix group entered."
-                    f"{color.END}"
-                )
+                print(f"\n{color.BOLD + color.RED}No suffix group entered.{color.END}")
             else:
                 # split input into list of words
                 input_suffixes = input_suffix_group.split()
@@ -386,7 +311,6 @@ def main():
                 f"{color.END}"
             )
 
-
     #######################################################################
     # customization of output
     #######################################################################
@@ -442,7 +366,6 @@ def main():
             str_date = "\\phantom{empty date}"
         case _:
             str_date = input_date
-
 
     #######################################################################
     # typeset LaTeX file
@@ -501,7 +424,7 @@ def main():
         for page_number in range(latex_pages):
             # start each page with the opening of the table environment
             file_output.write(
-                f"% Page {page_number+1}\n"
+                f"% Page {page_number + 1}\n"
                 "\\begin{tabularx}{\\linewidth}{@{}*{7}{Y}@{}}\n"
             )
 
@@ -545,3 +468,69 @@ def main():
         os.startfile(path_latex.with_suffix(".pdf"))  # type: ignore
     else:
         subprocess.run(["xdg-open", path_latex.with_suffix(".pdf")])
+
+
+# function that returns sticker content
+def return_sticker(x, names_list, str_date):
+    # return empty sticker
+    if x >= len(names_list) or names_list[x] is None:
+        sticker = "\\phantom{empty}\\par\\phantom{sticker}"
+    else:
+        sticker = tex_escape(names_list[x])
+        # reduce font size depending on how long text is
+        if len(sticker) > 20:
+            sticker = "{\\tiny " + sticker + "}"
+        elif len(sticker) > 15:
+            sticker = "{\\ssmall " + sticker + "}"
+
+        # if sticker is long let latex do the word splitting,
+        # otherwise put date on new line
+        if len(sticker) > 30:
+            sticker = sticker + str_date
+        else:
+            sticker = sticker + f"\\par {str_date}"
+    return sticker
+
+
+# function to escape characters for LaTeX output
+# https://stackoverflow.com/a/25875504
+def tex_escape(text):
+    """
+    :param text: a plain text message
+    :return: the message escaped to appear correctly in LaTeX
+    """
+    conv = {
+        "&": r"\&",
+        "%": r"\%",
+        "$": r"\$",
+        "#": r"\#",
+        "_": r"\_",
+        "{": r"\{",
+        "}": r"\}",
+        "~": r"\textasciitilde{}",
+        "^": r"\^{}",
+        "\\": r"\textbackslash{}",
+        "<": r"\textless{}",
+        ">": r"\textgreater{}",
+    }
+    regex = re.compile(
+        "|".join(
+            re.escape(str(key))
+            for key in sorted(conv.keys(), key=lambda item: -len(item))
+        )
+    )
+    return regex.sub(lambda match: conv[match.group()], text)
+
+
+# print some of the sample names
+def print_samples(names_list, names_number):
+    message = f"{names_list[0]}"
+    if names_number > 1:
+        message = message + f", {names_list[1]}"
+    if names_number > 3:
+        message = message + " ... "
+    elif names_number == 3:
+        message = message + ", "
+    if names_number > 2:
+        message = message + f"{names_list[-1]}"
+    return message
