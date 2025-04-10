@@ -16,5 +16,5 @@ dependencies = [
 generate-labels = "generate_labels.generate_labels:main"
 
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["setuptools>=78", "setuptools-scm>=8"]
+build-backend = "setuptools.build_meta"
