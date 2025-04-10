@@ -3,6 +3,7 @@
 ## development version
 
 - Convert generateStickers into the `generate-labels` package
+- Use astral-sh/ruff-action@v3 action to run `ruff check`
 
 ## v2.6.0
 
