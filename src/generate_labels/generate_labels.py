@@ -5,6 +5,7 @@ import shutil
 import subprocess
 import sys
 from datetime import date
+from importlib import resources
 from pathlib import Path
 from platform import system
 
@@ -372,8 +373,9 @@ def main():
     #######################################################################
 
     # set paths to typesetting and output files
-    path_preamble = Path("resources", "preamble.tex")
-    path_before_body = Path("resources", "before_body.tex")
+    dir_resources = resources.files().joinpath("resources")
+    path_preamble = dir_resources.joinpath("preamble.tex")
+    path_before_body = dir_resources.joinpath("before_body.tex")
     path_latex = path_output.with_suffix(".tex")
 
     # remove old output file if one already exist
