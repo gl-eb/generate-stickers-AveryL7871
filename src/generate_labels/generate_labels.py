@@ -116,7 +116,7 @@ def main():
     parser.add_argument(
         "-i",
         "--interactive",
-        help="run generateStickers in interactive mode, requiring user input for "
+        help="run generate-labels in interactive mode, requiring user input for "
         "any unset arguments",
         action="store_true",
     )
@@ -157,13 +157,13 @@ def main():
     if args.input_file is None and not args.interactive:
         print(
             f"{color.BOLD + color.YELLOW}"
-            "As of version 2.4.0 generateStickers supports command-line "
+            "As of version 2.4.0 generate-labels supports command-line "
             "arguments. Please run the script with the following command for a "
             "fully interactive experience:"
-            "\n\npython generateStickers.py --interactive"
+            "\n\ngenerate-labels --interactive"
             "\n\nMore information can be found at "
             "https://github.com/gl-eb/generate-stickers-AveryL7871 or by running"
-            "\n\npython generateStickers.py --help"
+            "\n\ngenerate-labels --help"
             f"{color.END}\n"
         )
 
