@@ -7,9 +7,14 @@ The package is based on a python script (v2) which in turn was conceptually base
 
 - This package was developed primarily for a UNIX type **command-line interface** (e.g. Terminal on macOS), but it should also work on Windows
 - **Python 3.13** or higher
-- **LaTeX** (e.g. TeX Live/MacTeX for macOS or any other TeX distribution). If you are using a small TeX distribution such as BasicTeX, make sure you have the following packages installed:
-  - booktabs
-  - moresize
+- **TeX**, ideally the TeX Live distribution
+  - `generate-labels` uses XeTeX as a typesetting engine
+  - If you are not using TeX Live, make sure you have the required packages installed using the following command
+
+    ```bash
+    tlmgr install booktabs cm-unicode fontspec moresize
+    ```
+
 - You will need a **plain text file** (with the `.txt` suffix), ideally UTF-8 encoded, containing one sample name per line.
   Sample names should ideally be 30 characters long at most.
   Longer names could mess up the layout and prevent proper printing on the sticker sheet
