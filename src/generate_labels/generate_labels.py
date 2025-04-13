@@ -34,7 +34,7 @@ def main():
     # make sure LaTeX is installed
     exec_latex = "xelatex"
     if shutil.which(exec_latex) is None:
-        sys.exit(exec_latex + " was not found. Please install LaTeX")
+        sys.exit(f"{exec_latex} was not found. Please install LaTeX")
 
     # fix ANSI text formatting on Windows
     just_fix_windows_console()
@@ -262,7 +262,7 @@ def main():
                 # loop through all names and add each suffix
                 for name in names_list_old:
                     for suffix in input_suffixes:
-                        names_list_new.append(name + "-" + suffix)
+                        names_list_new.append(f"{name}-{suffix}")
 
                 # replace old with new list
                 names_list_old = names_list_new
@@ -284,11 +284,7 @@ def main():
 
         # set path to which file with suffixed sample names will be written
         path_suffix = Path(
-            str(path_output.parent)
-            + "/"
-            + path_output.stem
-            + "_suffix"
-            + path_output.suffix
+            f"{str(path_output.parent)}/{path_output.stem}_suffix{path_output.suffix}"
         )
 
         # remove old output file and ignore error if it does not exist
@@ -481,16 +477,16 @@ def return_sticker(x, names_list, str_date):
         sticker = tex_escape(names_list[x])
         # reduce font size depending on how long text is
         if len(sticker) > 20:
-            sticker = "{\\tiny " + sticker + "}"
+            sticker = f"{{\\tiny {sticker} }}"
         elif len(sticker) > 15:
-            sticker = "{\\ssmall " + sticker + "}"
+            sticker = f"{{\\ssmall {sticker} }}"
 
         # if sticker is long let latex do the word splitting,
         # otherwise put date on new line
         if len(sticker) > 30:
-            sticker = sticker + str_date
+            sticker = f"{sticker} {str_date}"
         else:
-            sticker = sticker + f"\\par {str_date}"
+            sticker = f"{sticker} \\par {str_date}"
     return sticker
 
 
@@ -528,11 +524,11 @@ def tex_escape(text):
 def print_samples(names_list, names_number):
     message = f"{names_list[0]}"
     if names_number > 1:
-        message = message + f", {names_list[1]}"
+        message = f"{message}, {names_list[1]}"
     if names_number > 3:
-        message = message + " ... "
+        message = f"{message} ... "
     elif names_number == 3:
-        message = message + ", "
+        message = f"{message}, "
     if names_number > 2:
-        message = message + f"{names_list[-1]}"
+        message = f"{message}{names_list[-1]}"
     return message
