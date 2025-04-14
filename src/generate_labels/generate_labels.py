@@ -468,10 +468,12 @@ def return_sticker(x, names_list, str_date):
     else:
         sticker = tex_escape(names_list[x])
         # set smaller font size depending on sticker text length
-        if len(sticker) > 20:
+        if str_width(sticker) >= 139:
             sticker = f"{{\\tiny {sticker} }}"
-        elif len(sticker) > 15:
+        elif str_width(sticker) >= 104:
             sticker = f"{{\\ssmall {sticker} }}"
+        elif str_width(sticker) >= 88:
+            sticker = f"{{\\scriptsize {sticker} }}"
 
         # if sticker is long let latex do the word splitting,
         # otherwise put date on new line
@@ -524,3 +526,27 @@ def print_samples(names_list, names_number):
     if names_number > 2:
         message = f"{message}{names_list[-1]}"
     return message
+
+
+def str_width(string: str, size: int = 10) -> float:
+    # fmt: off
+    WIDTH_DICT={
+        '0': 55, '1': 55, '2': 55, '3': 55, '4': 55, '5': 55, '6': 55, '7': 55,
+        '8': 55, '9': 55, 'a': 53, 'b': 56, 'c': 49, 'd': 56, 'e': 51, 'f': 39,
+        'g': 55, 'h': 56, 'i': 26, 'j': 36, 'k': 53, 'l': 26, 'm': 87, 'n': 56,
+        'o': 55, 'p': 56, 'q': 56, 'r': 37, 's': 42, 't': 40, 'u': 56, 'v': 50,
+        'w': 74, 'x': 50, 'y': 50, 'z': 48, 'A': 73, 'B': 73, 'C': 70, 'D': 79,
+        'E': 64, 'F': 61, 'G': 73, 'H': 79, 'I': 33, 'J': 52, 'K': 76, 'L': 58,
+        'M': 98, 'N': 79, 'O': 79, 'P': 70, 'Q': 79, 'R': 70, 'S': 61, 'T': 73,
+        'U': 76, 'V': 73, 'W': 104, 'X': 73, 'Y': 73, 'Z': 67, '!': 37, '"': 55,
+        '#': 92, '$': 55, '%': 103, '&': 83, "'": 31, '(': 43, ')': 43, '*': 55,
+        '+': 86, ',': 31, '-': 37, '.': 31, '/': 55, ':': 31, ';': 31, '<': 86,
+        '=': 86, '>': 86, '?': 52, '@': 73, '[': 34, '\\': 55, ']': 34, '^': 67,
+        '_': 86, '`': 55, '{': 55, '|': 31, '}': 55, '~': 67, ' ': 37
+    }
+
+    AVERAGE_WIDTH = 58.810526315789474
+
+    width = sum(WIDTH_DICT.get(s, AVERAGE_WIDTH) for s in string) * (size / 100)
+
+    return round(width)
