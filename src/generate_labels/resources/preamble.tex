@@ -1,5 +1,7 @@
-\batchmode % disable command line output
-\documentclass[a4paper]{article} % document definition
+% disable command line output
+\batchmode
+
+\documentclass[a4paper]{article}
 % set document margins
 \usepackage[top=1.2cm, bottom=1.2cm, left=0.5cm, right=0.5cm]{geometry}
 % tables with columns of a defined width
@@ -8,14 +10,17 @@
 \usepackage{booktabs}
 % more font sizes
 \usepackage{moresize}
-% font with more glyphs
+% use OpenType fonts
 \usepackage{fontspec}
+
+% font with more glyphs
 \setmainfont{cmunsx.otf}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% no page numbers
+\pagestyle{empty}
 
-\pagestyle{empty} % no page numbers
-\setlength{\parindent}{0pt} % set paragraph indent to zero
+% set paragraph indent to zero
+\setlength{\parindent}{0pt}
 
 % defines custom column type for table
 \newcolumntype{Y}{>{\centering\arraybackslash}X}
@@ -24,3 +29,5 @@
 
 % set default font size
 \footnotesize
+
+%--------------------------------------------------------------------------
