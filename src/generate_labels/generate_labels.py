@@ -408,6 +408,7 @@ def main():
         with open(path_preamble, "r") as file_preamble:
             for line in file_preamble:
                 file_output.write(line)
+            file_output.write("\n")
 
         # variable to track the current position in the list of names
         n = 0
@@ -439,9 +440,10 @@ def main():
                 file_output.write(" \\\\")  # end line after 7 stickers
                 # add whitespace after lines
                 if line_number == 26:
-                    file_output.write(" \\addlinespace[0.05cm]\n")
+                    file_output.write("\n")
                 else:
-                    file_output.write(" \\addlinespace[0.361381cm]\n")
+                    # maximum allowable space determined by trial and error
+                    file_output.write(" \\addlinespace[0.462806cm]\n")
                 # if all names were printed, break loop
                 if n >= names_number:
                     break
