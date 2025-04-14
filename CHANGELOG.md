@@ -3,6 +3,10 @@
 ## development version
 
 - Convert generateStickers into the `generate-labels` package
+- Typography
+  - Change font to Computer Modern Unicode Sans Serif Bold to increase the number of available glyphs
+  - Increase font size and adapt spacing to accomodate increased line height
+- Merge `before_body.tex` into `preamble.tex`
 - Use astral-sh/ruff-action@v3 action to run `ruff check`
 
 ## v2.6.0

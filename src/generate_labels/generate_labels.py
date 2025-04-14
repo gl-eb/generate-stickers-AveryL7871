@@ -371,7 +371,6 @@ def main():
     # set paths to typesetting and output files
     dir_resources = resources.files().joinpath("resources")
     path_preamble = dir_resources.joinpath("preamble.tex")
-    path_before_body = dir_resources.joinpath("before_body.tex")
     path_latex = path_output.with_suffix(".tex")
 
     # remove old output file if one already exist
@@ -410,11 +409,6 @@ def main():
             for line in file_preamble:
                 file_output.write(line)
 
-        # write contents of before_header file to output file
-        with open(path_before_body, "r") as file_before_body:
-            for line in file_before_body:
-                file_output.write(line)
-
         # variable to track the current position in the list of names
         n = 0
 
@@ -447,7 +441,7 @@ def main():
                 if line_number == 26:
                     file_output.write(" \\addlinespace[0.05cm]\n")
                 else:
-                    file_output.write(" \\addlinespace[0.470878cm]\n")
+                    file_output.write(" \\addlinespace[0.361381cm]\n")
                 # if all names were printed, break loop
                 if n >= names_number:
                     break
@@ -475,7 +469,7 @@ def return_sticker(x, names_list, str_date):
         sticker = "\\phantom{empty}\\par\\phantom{sticker}"
     else:
         sticker = tex_escape(names_list[x])
-        # reduce font size depending on how long text is
+        # set smaller font size depending on sticker text length
         if len(sticker) > 20:
             sticker = f"{{\\tiny {sticker} }}"
         elif len(sticker) > 15:
