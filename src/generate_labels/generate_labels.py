@@ -418,7 +418,7 @@ def main():
             # start each page with the opening of the table environment
             file_output.write(
                 f"% Page {page_number + 1}\n"
-                "\\begin{tabularx}{\\linewidth}{@{}*{7}{Y}@{}}\n"
+                "\\begin{tabularhtx}{\\textheight}{\\linewidth}{@{}*{7}{Y}@{}}\n"
             )
 
             # loop through all rows
@@ -437,18 +437,14 @@ def main():
                     else:
                         break
                     n += 1
-                file_output.write(" \\\\")  # end line after 7 stickers
-                # add whitespace after lines
+                # add whitespace between rows
                 if line_number == 26:
-                    file_output.write("\n")
+                    file_output.write(" \\\\ \\interrowspace{-1em}\n")
                 else:
                     # maximum allowable space determined by trial and error
-                    file_output.write(" \\addlinespace[0.462806cm]\n")
-                # if all names were printed, break loop
-                if n >= names_number:
-                    break
+                    file_output.write(" \\\\ \\interrowfill\n")
             # close table environment at the end of the page
-            file_output.write("\\end{tabularx}\n\n")
+            file_output.write("\\end{tabularhtx}\n\n")
         # reenable command line output and end document
         file_output.write("\\scrollmode\n\\end{document}")
 

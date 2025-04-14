@@ -6,6 +6,7 @@
 - Typography
   - Change font to Computer Modern Unicode Sans Serif Bold to increase the number of available glyphs
   - Increase font size and adapt spacing to accomodate increased line height
+- Improve consistency of sticker layout
 - Merge `before_body.tex` into `preamble.tex`
 - Use astral-sh/ruff-action@v3 action to run `ruff check`
 
