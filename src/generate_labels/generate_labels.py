@@ -1,3 +1,13 @@
+"""Generate printable label layout from the command line
+
+This package reads sample names from a file and arranges them on a sheet
+of A4 paper for printing on Avery-Zweckform L7871 labels.
+
+```
+generate-labels -f sample_names.txt
+```
+"""
+
 import argparse
 import os
 import re
@@ -13,9 +23,14 @@ from colorama import just_fix_windows_console
 
 
 def main():
-    # create class with objects to format console output
-    # https://stackoverflow.com/a/287944
+    """Generate printable label layout"""
+
     class color:
+        """Objects used to format console output.
+
+        https://stackoverflow.com/a/287944
+        """
+
         PURPLE = "\033[95m"
         CYAN = "\033[96m"
         DARKCYAN = "\033[36m"
@@ -27,21 +42,17 @@ def main():
         UNDERLINE = "\033[4m"
         END = "\033[0m"
 
-    #######################################################################
-    # set up and check environment
-    #######################################################################
+    ### Set up and check environment ######################################
 
-    # make sure LaTeX is installed
+    # Make sure LaTeX is installed
     EXEC_LATEX = "xelatex"
     if shutil.which(EXEC_LATEX) is None:
         sys.exit(f"{EXEC_LATEX} was not found. Please install LaTeX")
 
-    # fix ANSI text formatting on Windows
+    # Fix ANSI text formatting on Windows
     just_fix_windows_console()
 
-    #######################################################################
-    # parse command line arguments
-    #######################################################################
+    ### Parse command line arguments ######################################
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -84,7 +95,7 @@ def main():
     )
     args = parser.parse_args()
 
-    # print warning about command-line arguments if none are set
+    # Print warning about command-line arguments if none are set
     if args.input_file is None and not args.interactive:
         print(
             f"{color.BOLD + color.YELLOW}"
@@ -98,17 +109,15 @@ def main():
             f"{color.END}\n"
         )
 
-    #######################################################################
-    # initial sample name input
-    #######################################################################
+    ### Initial sample name input #########################################
 
     retry = "no"
 
-    # keep asking for file names until file exists or user aborts script
+    # Keep asking for file names until file exists or user aborts script
     while True:
-        # check if input file has been set through cmd line args
+        # Check if input file has been set through cmd line args
         if args.input_file is None or retry == "yes":
-            # get input file name from user and store its name in variable
+            # Get input file name from user and store its name in variable
             input_file = input(
                 f"{color.BOLD + color.DARKCYAN}"
                 "Enter the name of the txt file containing your strain/isolate "
@@ -118,11 +127,11 @@ def main():
         else:
             input_file = args.input_file
 
-        # check if user input includes ".txt" suffix and add it if absent
+        # Check if user input includes ".txt" suffix and add it if absent
         if not input_file.endswith(".txt"):
             input_file += ".txt"
 
-        # if file does not exist, print error message and exit script
+        # If file does not exist, print error message and exit script
         if not Path(input_file).exists():
             print(
                 f"\n{color.BOLD + color.RED}File {input_file} not found. "
@@ -132,8 +141,7 @@ def main():
                 f"{color.END}"
             )
 
-            # if in interactive mode, ask user whether they want to type
-            # the file name again
+            # If in interactive mode, ask user whether they want to try again
             if args.interactive:
                 retry = input(
                     f"{color.BOLD + color.DARKCYAN}"
@@ -142,7 +150,7 @@ def main():
                 )
                 retry = retry.casefold()
 
-                # if user wants to try again restart loop otherwise exit
+                # If user wants to try again, restart loop, otherwise exit
                 if retry == "yes" or not retry:
                     continue
                 else:
@@ -153,13 +161,13 @@ def main():
         else:
             break
 
-    # read lines from file, filter out empty ones and convert to list
+    # Read lines from file, filter out empty ones and convert to list
     with open(input_file, "r") as file:
         names_list = list(filter(None, (line.rstrip() for line in file)))
 
     names_number = len(names_list)
 
-    # print some of the sample names
+    # Print some of the sample names
     print(
         f"\n{color.BOLD + color.DARKCYAN}"
         f"Your file contains {names_number} names:\n"
@@ -167,13 +175,12 @@ def main():
         f"{color.END}"
     )
 
-    # set output file name to input file name
     name_output = input_file
 
-    # set name of output file depending on command line arguments
+    # Set name of output file depending on command line arguments
     if args.output_file is None:
         if args.interactive:
-            # ask user whether they want to continue with the sample names
+            # Ask user whether they want to continue with the sample names
             input_continue = input(
                 f"{color.BOLD + color.DARKCYAN}Do you want to continue with these "
                 'names? Type "yes" (default) or "no": '
@@ -181,11 +188,11 @@ def main():
             )
             input_continue = input_continue.casefold()
 
-            # exit script if user says no, otherwise continue
+            # Exit script if user says no, otherwise continue
             if input_continue == "no":
                 sys.exit()
 
-            # query user on output file name
+            # Ask user for output file name
             name_output = input(
                 f"\n{color.BOLD + color.DARKCYAN}Type the name of your output "
                 'file without suffix (e.g. "file" instead of "file.txt"). '
@@ -193,7 +200,6 @@ def main():
                 f"{color.END}"
             )
 
-            # deal with empty answer
             if not name_output:
                 name_output = input_file
         else:
@@ -201,18 +207,16 @@ def main():
     else:
         name_output = args.output_file
 
-    # set output file path
+    # Set output file path to current folder
     path_output = Path(str(Path().absolute()) + "/" + name_output)
 
-    #######################################################################
-    # construct sample names using suffixes
-    #######################################################################
+    ### Construct sample names using suffixes #############################
 
     if args.add_suffixes:
         input_suffix = True
     else:
         if args.interactive:
-            # give user choice whether to add suffixes
+            # Ask user whether to add suffixes
             input_suffix = input(
                 f"\n{color.BOLD + color.DARKCYAN}"
                 "Do you want to add suffixes to your sample names? "
@@ -222,7 +226,7 @@ def main():
             input_suffix = False
 
     if input_suffix is True or input_suffix == "yes":
-        # print explanation of inner workings once before continuing
+        # Print explanation of how suffix addition works
         print(
             f"\n{color.BOLD + color.DARKCYAN}=========================================="
         )
@@ -237,65 +241,60 @@ def main():
             f"Strain1-TREAT1-Replicate2 ...).{color.END}"
         )
 
-        # initiate list with names to be modified
+        # Initiate list with names to be modified
         names_list_new = []
         names_list_old = names_list
 
-        # keep asking for suffixes and adding them to sample names
-        # until user stops loop.
+        # Keep asking for suffixes until user stops loop.
         while True:
-            # ask for group of suffixes
+            # Ask for group of suffixes
             input_suffix_group = input(
                 f"{color.BOLD + color.DARKCYAN}\nEnter a group of suffixes: {color.END}"
             )
 
-            # exit suffixing logic if not suffixes provided
+            # Exit suffixing logic if no suffixes provided
             if not input_suffix_group:
                 print(f"\n{color.BOLD + color.RED}No suffix group entered.{color.END}")
             else:
-                # split input into list of words
+                # Split input into list of words
                 input_suffixes = input_suffix_group.split()
 
-                # reinitiate list so it is empty
                 names_list_new = []
 
-                # loop through all names and add each suffix
+                # Loop through names and add suffixe
                 for name in names_list_old:
                     for suffix in input_suffixes:
                         names_list_new.append(f"{name}-{suffix}")
 
-                # replace old with new list
                 names_list_old = names_list_new
 
-            # ask user whether to run through another interation of the
-            # suffix loop
+            # Ask user whether to add another level of suffixes
             input_suffix_continue = input(
                 f"\n{color.BOLD + color.DARKCYAN}"
                 "Do you want to add another group of suffixes? "
                 f'Type "yes" or "no" (default): {color.END}'
             ).casefold()
 
-            # if user answers anything other than yes break out of loop,
-            # otherwise repeat
+            # Break out of loop if user answers anything other than "yes"
             if input_suffix_continue != "yes":
                 break
             else:
                 continue
 
-        # set path to which file with suffixed sample names will be written
+        # Set path to which txt file with suffixed sample names will be written
         path_suffix = Path(
             f"{str(path_output.parent)}/{path_output.stem}_suffix{path_output.suffix}"
         )
 
-        # remove old output file and ignore error if it does not exist
+        # Remove old output file if it exists
         try:
             path_suffix.unlink()
         except FileNotFoundError:
             pass
 
-        # replace original list of names with suffixed names
+        # Replace original list of sample names with suffixed names
         try:
-            # write new sample names to new output file
+            # Write new sample names to new output file
             with open(path_suffix, "a+") as file_samples:
                 for item in names_list_new:
                     file_samples.write(f"{item}\n")
@@ -308,21 +307,19 @@ def main():
                 f"{color.END}"
             )
 
-    #######################################################################
-    # customization of output
-    #######################################################################
+    ### Customise printable layout ########################################
 
-    # set number of skipped stickers depending on combination of args
+    # Set number of skipped stickers depending on combination of arguments
     if args.skip is None:
         if args.interactive:
-            # ask user how many stickers they want to skip (default: 0)
+            # Ask user how many stickers they want to skip (default: 0)
             input_skip = input(
                 f"\n{color.BOLD + color.DARKCYAN}"
                 f"How many stickers do you want to skip, e.g. because they were "
                 f"already used before (default = 0): {color.END}"
             ).casefold()
 
-            # deal with empty or non-numeric answers
+            # Deal with empty or non-numeric answers
             if not input_skip:
                 input_skip = 0
             else:
@@ -332,14 +329,14 @@ def main():
     else:
         input_skip = args.skip
 
-    # prepend empty items to list of names for each sticker to skip
+    # Prepend empty items to list of names for each sticker to skip
     names_list = ([None] * input_skip) + names_list
     names_number = len(names_list)
 
-    # set date depending on combination of args
+    # Set date depending on combination of args
     if args.date is None:
         if args.interactive:
-            # give user choice whether to print date and in which format
+            # Give user choice whether to print date and in which format
             print(
                 f"""{color.BOLD + color.DARKCYAN}
                 Do you want to print a date to the second sticker row?
@@ -355,7 +352,7 @@ def main():
     else:
         input_date = args.date
 
-    # set str_date variable depending on user's date choice
+    # Set str_date variable depending on user's date choice
     match input_date:
         case "today":
             str_date = date.today().isoformat()
@@ -364,29 +361,26 @@ def main():
         case _:
             str_date = input_date
 
-    #######################################################################
-    # typeset LaTeX file
-    #######################################################################
+    ### Typeset TeX file ##################################################
 
     # set paths to typesetting and output files
     DIR_RESOURCES = resources.files().joinpath("resources")
     PATH_PREAMBLE = DIR_RESOURCES.joinpath("preamble.tex")
     PATH_LATEX = path_output.with_suffix(".tex")
 
-    # remove old output file if one already exist
+    # Remove old output file if one already exist
     try:
         PATH_LATEX.unlink()
     except FileNotFoundError:
         pass
 
-    # calculate number of pages necessary to fit all stickers
-    # (including skipped ones)
+    # Calculate number of pages necessary to fit all stickers (including skipped ones)
     latex_pages = names_number // 189
-    # add page for remaining stickers
+    # Add page for remaining stickers
     if names_number % 189 > 0:
         latex_pages = latex_pages + 1
 
-    # check if any sample names are above the maximum recommended length
+    # Check if any sample names are above the maximum recommended length
     overlength = False
     for name in names_list:
         if name is not None:
@@ -402,32 +396,32 @@ def main():
             f"{color.END}"
         )
 
-    # create .tex file and write to it
+    # Create TeX file and write to it
     with open(PATH_LATEX, "a+") as file_output:
-        # write contents of preamble file to output file
+        # Write contents of preamble file to output file
         with open(PATH_PREAMBLE, "r") as file_preamble:
             for line in file_preamble:
                 file_output.write(line)
             file_output.write("\n")
 
-        # variable to track the current position in the list of names
         n = 0
+        """Track current position in the list of names"""
 
-        # loop through pages of final sticker layout
+        # Loop through pages of final sticker layout
         for page_number in range(latex_pages):
-            # start each page with the opening of the table environment
+            # Start each page with the opening of the table environment
             file_output.write(
                 f"% Page {page_number + 1}\n"
                 "\\begin{tabularhtx}{\\textheight}{\\linewidth}{@{}*{7}{Y}@{}}\n"
             )
 
-            # loop through all rows
+            # Loop through rows
             for line_number in range(27):
-                # add tab character at beginning of line
+                # Add tab character at beginning of line to increase readability
                 file_output.write("\t")
-                # loop through columns
+                # Loop through columns
                 for position in range(7):
-                    # print unprinted sample names
+                    # Print unprinted sample names
                     if position < 6:
                         file_output.write(
                             f"{return_sticker(n, names_list, str_date)} & "
@@ -437,21 +431,20 @@ def main():
                     else:
                         break
                     n += 1
-                # add whitespace between rows
+                # Add whitespace between rows
                 if line_number == 26:
                     file_output.write(" \\\\ \\interrowspace{-1em}\n")
                 else:
-                    # maximum allowable space determined by trial and error
                     file_output.write(" \\\\ \\interrowfill\n")
-            # close table environment at the end of the page
+            # Close table environment at the end of the page
             file_output.write("\\end{tabularhtx}\n\n")
-        # reenable command line output and end document
+        # Reenable command line output and end document
         file_output.write("\\scrollmode\n\\end{document}")
 
-    # call LaTeX executable to typeset .tex file
+    # Call LaTeX executable to typeset .tex file
     subprocess.run([EXEC_LATEX, PATH_LATEX], stdout=subprocess.DEVNULL)
 
-    # open resulting pdf file in an OS-dependent manner
+    # Open resulting PDF in an OS-dependent manner
     if system() == "Darwin":
         subprocess.run(["open", PATH_LATEX.with_suffix(".pdf")])
     elif system() == "Windows":
@@ -460,14 +453,31 @@ def main():
         subprocess.run(["xdg-open", PATH_LATEX.with_suffix(".pdf")])
 
 
-# function that returns sticker content
-def return_sticker(x, names_list, str_date):
-    # return empty sticker
+def return_sticker(x: int, names_list: list, str_date: str) -> str:
+    """
+    Return sticker content
+
+    Parameters
+    ----------
+    x: int
+        Index of sticker to print
+    names_list: list
+        List of sticker contents
+    str_dat: str
+        Date to print on sticker
+
+    Returns
+    -------
+    str
+        Sticker contents written in TeX
+    """
+
     if x >= len(names_list) or names_list[x] is None:
+        # Return empty sticker
         sticker = "\\phantom{empty}\\par\\phantom{sticker}"
     else:
         sticker = tex_escape(names_list[x])
-        # set smaller font size depending on sticker text length
+        # Set smaller font size depending on sticker text length
         if str_width(sticker) >= 139:
             sticker = f"{{\\tiny {sticker} }}"
         elif str_width(sticker) >= 104:
@@ -475,7 +485,7 @@ def return_sticker(x, names_list, str_date):
         elif str_width(sticker) >= 88:
             sticker = f"{{\\scriptsize {sticker} }}"
 
-        # if sticker is long let latex do the word splitting,
+        # If sticker is long, let TeX do the word splitting,
         # otherwise put date on new line
         if len(sticker) > 30:
             sticker = f"{sticker} {str_date}"
@@ -484,13 +494,23 @@ def return_sticker(x, names_list, str_date):
     return sticker
 
 
-# function to escape characters for LaTeX output
-# https://stackoverflow.com/a/25875504
-def tex_escape(text):
+def tex_escape(text: str) -> str:
     """
-    :param text: a plain text message
-    :return: the message escaped to appear correctly in LaTeX
+    Escape characters for TeX output
+
+    https://stackoverflow.com/a/25875504
+
+    Parameters
+    ----------
+    text: str
+        Text to process for escapable characters
+
+    Returns
+    -------
+    str
+        Text escaped to appear correctly in TeX
     """
+
     conv = {
         "&": r"\&",
         "%": r"\%",
@@ -514,8 +534,23 @@ def tex_escape(text):
     return regex.sub(lambda match: conv[match.group()], text)
 
 
-# print some of the sample names
-def print_samples(names_list, names_number):
+def print_samples(names_list: list, names_number: int) -> str:
+    """
+    Print up to three sample names for quality control
+
+    Parameters
+    ----------
+    names_list: list
+        List of sample names found in input file
+    names_number: int
+        Number of sample names found in input file
+
+    Returns
+    -------
+    str
+        Message that can be printed to the command line
+    """
+
     message = f"{names_list[0]}"
     if names_number > 1:
         message = f"{message}, {names_list[1]}"
@@ -529,6 +564,24 @@ def print_samples(names_list, names_number):
 
 
 def str_width(string: str, size: int = 10) -> float:
+    """
+    Calculate width of string in Computer Modern Unicode Sans Serif Bold
+
+    https://stackoverflow.com/a/77351575
+
+    Parameters
+    ----------
+    string: str
+        String to be measured
+    size: int
+        Font size in pts of string (default: 10)
+
+    Returns
+    -------
+    float
+        Width of string in pts
+    """
+
     # fmt: off
     WIDTH_DICT={
         '0': 55, '1': 55, '2': 55, '3': 55, '4': 55, '5': 55, '6': 55, '7': 55,
