@@ -9,6 +9,7 @@
 - Improve consistency and reliability of sticker layout
 - Merge `before_body.tex` into `preamble.tex`
 - Use astral-sh/ruff-action@v3 action to run `ruff check`
+- Refactor code and improve documentation
 
 ## v2.6.0
 
