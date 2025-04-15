@@ -32,9 +32,9 @@ def main():
     #######################################################################
 
     # make sure LaTeX is installed
-    exec_latex = "xelatex"
-    if shutil.which(exec_latex) is None:
-        sys.exit(f"{exec_latex} was not found. Please install LaTeX")
+    EXEC_LATEX = "xelatex"
+    if shutil.which(EXEC_LATEX) is None:
+        sys.exit(f"{EXEC_LATEX} was not found. Please install LaTeX")
 
     # fix ANSI text formatting on Windows
     just_fix_windows_console()
@@ -369,13 +369,13 @@ def main():
     #######################################################################
 
     # set paths to typesetting and output files
-    dir_resources = resources.files().joinpath("resources")
-    path_preamble = dir_resources.joinpath("preamble.tex")
-    path_latex = path_output.with_suffix(".tex")
+    DIR_RESOURCES = resources.files().joinpath("resources")
+    PATH_PREAMBLE = DIR_RESOURCES.joinpath("preamble.tex")
+    PATH_LATEX = path_output.with_suffix(".tex")
 
     # remove old output file if one already exist
     try:
-        path_latex.unlink()
+        PATH_LATEX.unlink()
     except FileNotFoundError:
         pass
 
@@ -403,9 +403,9 @@ def main():
         )
 
     # create .tex file and write to it
-    with open(path_latex, "a+") as file_output:
+    with open(PATH_LATEX, "a+") as file_output:
         # write contents of preamble file to output file
-        with open(path_preamble, "r") as file_preamble:
+        with open(PATH_PREAMBLE, "r") as file_preamble:
             for line in file_preamble:
                 file_output.write(line)
             file_output.write("\n")
@@ -449,15 +449,15 @@ def main():
         file_output.write("\\scrollmode\n\\end{document}")
 
     # call LaTeX executable to typeset .tex file
-    subprocess.run([exec_latex, path_latex], stdout=subprocess.DEVNULL)
+    subprocess.run([EXEC_LATEX, PATH_LATEX], stdout=subprocess.DEVNULL)
 
     # open resulting pdf file in an OS-dependent manner
     if system() == "Darwin":
-        subprocess.run(["open", path_latex.with_suffix(".pdf")])
+        subprocess.run(["open", PATH_LATEX.with_suffix(".pdf")])
     elif system() == "Windows":
-        os.startfile(path_latex.with_suffix(".pdf"))  # type: ignore
+        os.startfile(PATH_LATEX.with_suffix(".pdf"))  # type: ignore
     else:
-        subprocess.run(["xdg-open", path_latex.with_suffix(".pdf")])
+        subprocess.run(["xdg-open", PATH_LATEX.with_suffix(".pdf")])
 
 
 # function that returns sticker content
