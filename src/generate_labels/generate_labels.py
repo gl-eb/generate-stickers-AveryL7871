@@ -171,7 +171,7 @@ def main():
     print(
         f"\n{color.BOLD + color.DARKCYAN}"
         f"Your file contains {names_number} names:\n"
-        f"{print_samples(names_list, names_number)}"
+        f"{_print_samples(names_list, names_number)}"
         f"{color.END}"
     )
 
@@ -424,10 +424,10 @@ def main():
                     # Print unprinted sample names
                     if position < 6:
                         file_output.write(
-                            f"{return_sticker(n, names_list, str_date)} & "
+                            f"{_return_sticker(n, names_list, str_date)} & "
                         )
                     elif position == 6:
-                        file_output.write(f"{return_sticker(n, names_list, str_date)}")
+                        file_output.write(f"{_return_sticker(n, names_list, str_date)}")
                     else:
                         break
                     n += 1
@@ -453,7 +453,7 @@ def main():
         subprocess.run(["xdg-open", PATH_LATEX.with_suffix(".pdf")])
 
 
-def return_sticker(x: int, names_list: list, str_date: str) -> str:
+def _return_sticker(x: int, names_list: list, str_date: str) -> str:
     """
     Return sticker content
 
@@ -476,13 +476,13 @@ def return_sticker(x: int, names_list: list, str_date: str) -> str:
         # Return empty sticker
         sticker = "\\phantom{empty}\\par\\phantom{sticker}"
     else:
-        sticker = tex_escape(names_list[x])
+        sticker = _tex_escape(names_list[x])
         # Set smaller font size depending on sticker text length
-        if str_width(sticker) >= 139:
+        if _str_width(sticker) >= 139:
             sticker = f"{{\\tiny {sticker} }}"
-        elif str_width(sticker) >= 104:
+        elif _str_width(sticker) >= 104:
             sticker = f"{{\\ssmall {sticker} }}"
-        elif str_width(sticker) >= 88:
+        elif _str_width(sticker) >= 88:
             sticker = f"{{\\scriptsize {sticker} }}"
 
         # If sticker is long, let TeX do the word splitting,
@@ -494,7 +494,7 @@ def return_sticker(x: int, names_list: list, str_date: str) -> str:
     return sticker
 
 
-def tex_escape(text: str) -> str:
+def _tex_escape(text: str) -> str:
     """
     Escape characters for TeX output
 
@@ -534,7 +534,7 @@ def tex_escape(text: str) -> str:
     return regex.sub(lambda match: conv[match.group()], text)
 
 
-def print_samples(names_list: list, names_number: int) -> str:
+def _print_samples(names_list: list, names_number: int) -> str:
     """
     Print up to three sample names for quality control
 
@@ -563,7 +563,7 @@ def print_samples(names_list: list, names_number: int) -> str:
     return message
 
 
-def str_width(string: str, size: int = 10) -> float:
+def _str_width(string: str, size: int = 10) -> float:
     """
     Calculate width of string in Computer Modern Unicode Sans Serif Bold
 
