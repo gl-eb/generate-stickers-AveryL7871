@@ -44,10 +44,10 @@ def main():
 
     ### Set up and check environment ######################################
 
-    # Make sure LaTeX is installed
-    EXEC_LATEX = "xelatex"
-    if shutil.which(EXEC_LATEX) is None:
-        sys.exit(f"{EXEC_LATEX} was not found. Please install LaTeX")
+    # Make sure TeX is installed
+    EXEC_TEX = "xelatex"
+    if shutil.which(EXEC_TEX) is None:
+        sys.exit(f"{EXEC_TEX} was not found. Please install TeX")
 
     # Fix ANSI text formatting on Windows
     just_fix_windows_console()
@@ -366,19 +366,19 @@ def main():
     # set paths to typesetting and output files
     DIR_RESOURCES = resources.files().joinpath("resources")
     PATH_PREAMBLE = DIR_RESOURCES.joinpath("preamble.tex")
-    PATH_LATEX = path_output.with_suffix(".tex")
+    PATH_TEX = path_output.with_suffix(".tex")
 
     # Remove old output file if one already exist
     try:
-        PATH_LATEX.unlink()
+        PATH_TEX.unlink()
     except FileNotFoundError:
         pass
 
     # Calculate number of pages necessary to fit all stickers (including skipped ones)
-    latex_pages = names_number // 189
+    tex_pages = names_number // 189
     # Add page for remaining stickers
     if names_number % 189 > 0:
-        latex_pages = latex_pages + 1
+        tex_pages = tex_pages + 1
 
     # Check if any sample names are above the maximum recommended length
     overlength = False
@@ -397,7 +397,7 @@ def main():
         )
 
     # Create TeX file and write to it
-    with open(PATH_LATEX, "a+") as file_output:
+    with open(PATH_TEX, "a+") as file_output:
         # Write contents of preamble file to output file
         with open(PATH_PREAMBLE, "r") as file_preamble:
             for line in file_preamble:
@@ -408,7 +408,7 @@ def main():
         """Track current position in the list of names"""
 
         # Loop through pages of final sticker layout
-        for page_number in range(latex_pages):
+        for page_number in range(tex_pages):
             # Start each page with the opening of the table environment
             file_output.write(
                 f"% Page {page_number + 1}\n"
@@ -441,16 +441,16 @@ def main():
         # Reenable command line output and end document
         file_output.write("\\scrollmode\n\\end{document}")
 
-    # Call LaTeX executable to typeset .tex file
-    subprocess.run([EXEC_LATEX, PATH_LATEX], stdout=subprocess.DEVNULL)
+    # Call TeX executable to typeset .tex file
+    subprocess.run([EXEC_TEX, PATH_TEX], stdout=subprocess.DEVNULL)
 
     # Open resulting PDF in an OS-dependent manner
     if system() == "Darwin":
-        subprocess.run(["open", PATH_LATEX.with_suffix(".pdf")])
+        subprocess.run(["open", PATH_TEX.with_suffix(".pdf")])
     elif system() == "Windows":
-        os.startfile(PATH_LATEX.with_suffix(".pdf"))  # type: ignore
+        os.startfile(PATH_TEX.with_suffix(".pdf"))  # type: ignore
     else:
-        subprocess.run(["xdg-open", PATH_LATEX.with_suffix(".pdf")])
+        subprocess.run(["xdg-open", PATH_TEX.with_suffix(".pdf")])
 
 
 def _return_sticker(x: int, names_list: list, str_date: str) -> str:
