@@ -34,6 +34,14 @@ pip install generate-labels
 pipx install generate-labels
 ```
 
+### Development Version
+
+If you'd like to use the development version, I recommend to directly run it using `uv`.
+
+```bash
+uvx --from git+https://github.com/gl-eb/generate-stickers-AveryL7871@develop generate-labels
+```
+
 ### Aliases
 
 You can create an alias for `generate-labels` in your shell.
