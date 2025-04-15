@@ -478,11 +478,12 @@ def _return_sticker(x: int, names_list: list, str_date: str) -> str:
     else:
         sticker = _tex_escape(names_list[x])
         # Set smaller font size depending on sticker text length
-        if _str_width(sticker) >= 139:
+        width_sticker = _str_width(sticker)
+        if width_sticker >= 139:
             sticker = f"{{\\tiny {sticker} }}"
-        elif _str_width(sticker) >= 104:
+        elif width_sticker >= 104:
             sticker = f"{{\\ssmall {sticker} }}"
-        elif _str_width(sticker) >= 88:
+        elif width_sticker >= 88:
             sticker = f"{{\\scriptsize {sticker} }}"
 
         # If sticker is long, let TeX do the word splitting,
