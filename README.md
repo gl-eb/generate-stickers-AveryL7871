@@ -120,9 +120,9 @@ options:
   -h, --help            show this help message and exit
   -i, --interactive     run generate-labels in interactive mode, requiring user input for any unset arguments
   -f FILE, --input-file FILE
-                        the text file containing one sample name per line
+                        path to the text file containing one sample name per line
   -o FILE, --output-file FILE
-                        the name of the output file (default: same as input file)
+                        name of or path to the output file (default: same as input file)
   -a, --add-suffixes    interactively add suffixes to sample names
   -s INT, --skip INT    number of stickers to skip (default: 0)
   -d STR, --date STR    "today", "none", or a custom date string(default: "today")

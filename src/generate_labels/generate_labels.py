@@ -66,13 +66,13 @@ def main():
         "-f",
         "--input-file",
         metavar="FILE",
-        help="the text file containing one sample name per line",
+        help="path to the text file containing one sample name per line",
     )
     parser.add_argument(
         "-o",
         "--output-file",
         metavar="FILE",
-        help="the name of the output file (default: same as input file)",
+        help="name of or path to the output file (default: same as input file)",
     )
     parser.add_argument(
         "-a",
@@ -127,14 +127,18 @@ def main():
         else:
             input_file = args.input_file
 
+        # Resolve input path
+        path_input = Path(input_file).absolute().resolve()
+
         # Check if user input includes ".txt" suffix and add it if absent
-        if not input_file.endswith(".txt"):
-            input_file += ".txt"
+        if path_input.suffix != ".txt":
+            path_input = path_input.with_suffix(".txt")
 
         # If file does not exist, print error message and exit script
-        if not Path(input_file).exists():
+        if not path_input.exists():
             print(
-                f"\n{color.BOLD + color.RED}File {input_file} not found. "
+                f"\n{color.BOLD + color.RED}File not found:\n"
+                f"{path_input}\n"
                 "Make sure file is present in your working directory:\n"
                 f"{Path().cwd()}\nTo change your working directory type "
                 '"cd /Path/to/your/directory" then hit [ENTER]'
@@ -162,7 +166,7 @@ def main():
             break
 
     # Read lines from file, filter out empty ones and convert to list
-    with open(input_file, "r") as file:
+    with open(path_input, "r") as file:
         names_list = list(filter(None, (line.rstrip() for line in file)))
 
     names_number = len(names_list)
@@ -174,8 +178,6 @@ def main():
         f"{_print_samples(names_list, names_number)}"
         f"{color.END}"
     )
-
-    name_output = input_file
 
     # Set name of output file depending on command line arguments
     if args.output_file is None:
@@ -193,22 +195,22 @@ def main():
                 sys.exit()
 
             # Ask user for output file name
-            name_output = input(
+            file_output = input(
                 f"\n{color.BOLD + color.DARKCYAN}Type the name of your output "
                 'file without suffix (e.g. "file" instead of "file.txt"). '
                 "Press [ENTER] to use the name of the input file (default): "
                 f"{color.END}"
             )
 
-            if not name_output:
-                name_output = input_file
+            if not file_output:
+                file_output = path_input
         else:
-            name_output = input_file
+            file_output = path_input
     else:
-        name_output = args.output_file
+        file_output = args.output_file
 
-    # Set output file path to current folder
-    path_output = Path(str(Path().absolute()) + "/" + name_output)
+    # Resolve output path
+    path_output = Path(file_output).absolute().resolve().with_suffix(".pdf")
 
     ### Construct sample names using suffixes #############################
 
@@ -397,12 +399,12 @@ def main():
         )
 
     # Create TeX file and write to it
-    with open(PATH_TEX, "a+") as file_output:
+    with open(PATH_TEX, "a+") as file_tex:
         # Write contents of preamble file to output file
         with open(PATH_PREAMBLE, "r") as file_preamble:
             for line in file_preamble:
-                file_output.write(line)
-            file_output.write("\n")
+                file_tex.write(line)
+            file_tex.write("\n")
 
         n = 0
         """Track current position in the list of names"""
@@ -410,7 +412,7 @@ def main():
         # Loop through pages of final sticker layout
         for page_number in range(tex_pages):
             # Start each page with the opening of the table environment
-            file_output.write(
+            file_tex.write(
                 f"% Page {page_number + 1}\n"
                 "\\begin{tabularhtx}{\\textheight}{\\linewidth}{@{}*{7}{Y}@{}}\n"
             )
@@ -418,31 +420,32 @@ def main():
             # Loop through rows
             for line_number in range(27):
                 # Add tab character at beginning of line to increase readability
-                file_output.write("\t")
+                file_tex.write("\t")
                 # Loop through columns
                 for position in range(7):
                     # Print unprinted sample names
                     if position < 6:
-                        file_output.write(
-                            f"{_return_sticker(n, names_list, str_date)} & "
-                        )
+                        file_tex.write(f"{_return_sticker(n, names_list, str_date)} & ")
                     elif position == 6:
-                        file_output.write(f"{_return_sticker(n, names_list, str_date)}")
+                        file_tex.write(f"{_return_sticker(n, names_list, str_date)}")
                     else:
                         break
                     n += 1
                 # Add whitespace between rows
                 if line_number == 26:
-                    file_output.write(" \\\\ \\interrowspace{-1em}\n")
+                    file_tex.write(" \\\\ \\interrowspace{-1em}\n")
                 else:
-                    file_output.write(" \\\\ \\interrowfill\n")
+                    file_tex.write(" \\\\ \\interrowfill\n")
             # Close table environment at the end of the page
-            file_output.write("\\end{tabularhtx}\n\n")
+            file_tex.write("\\end{tabularhtx}\n\n")
         # Reenable command line output and end document
-        file_output.write("\\scrollmode\n\\end{document}")
+        file_tex.write("\\scrollmode\n\\end{document}")
 
     # Call TeX executable to typeset .tex file
-    subprocess.run([EXEC_TEX, PATH_TEX], stdout=subprocess.DEVNULL)
+    subprocess.run(
+        [EXEC_TEX, f"-output-directory={path_output.parent}/", PATH_TEX],
+        stdout=subprocess.DEVNULL,
+    )
 
     # Open resulting PDF in an OS-dependent manner
     if system() == "Darwin":
