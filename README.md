@@ -1,5 +1,7 @@
 # Generate Avery L7871 Labels
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.14288387.svg)](https://doi.org/10.5281/zenodo.14288387)
+
 `generate-labels` reads sample names from a txt file (one name per line) and arranges them on a sheet of A4 paper so that they can be printed on **Avery-Zweckform L7871** labels.
 The package is based on a python script (v2) which in turn was conceptually based on a bash script (v1).
 
