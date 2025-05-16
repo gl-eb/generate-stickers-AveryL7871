@@ -2,9 +2,9 @@ name: Ruff
 
 on:
   push:
-    paths: ["**.py"]
+    paths: ["**.py", "**.yaml"]
   pull_request:
-    paths: ["**.py"]
+    paths: ["**.py", "**.yaml"]
 
 jobs:
   ruff:
