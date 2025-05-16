@@ -61,8 +61,8 @@ def main(args=None) -> None:
         print(
             f"{color.BOLD + color.YELLOW}"
             "As of version 2.4.0 generate-labels supports command-line "
-            "arguments. Please run the script with the following command for a "
-            "fully interactive experience:"
+            "arguments. Please run generate-labels with the following command "
+            "for a fully interactive experience:"
             "\n\ngenerate-labels --interactive"
             "\n\nMore information can be found at "
             "https://github.com/gl-eb/generate-stickers-AveryL7871 or by running"
