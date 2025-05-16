@@ -408,17 +408,20 @@ def main(args=None) -> None:
         stdout=subprocess.DEVNULL,
     )
 
-    # Do not open resulting PDF if flag is set
+    PATH_PDF = PATH_TEX.with_suffix(".pdf")
+
     if args.no_open:
         return
-
-    # Open resulting PDF in an OS-dependent manner
-    if system() == "Darwin":
-        subprocess.run(["open", PATH_TEX.with_suffix(".pdf")])
-    elif system() == "Windows":
-        os.startfile(PATH_TEX.with_suffix(".pdf"))  # type: ignore
+    elif PATH_PDF.exists():
+        # Open resulting PDF in an OS-dependent manner
+        if system() == "Darwin":
+            subprocess.run(["open", PATH_PDF])
+        elif system() == "Windows":
+            os.startfile(PATH_PDF)  # type: ignore
+        else:
+            subprocess.run(["xdg-open", PATH_PDF])
     else:
-        subprocess.run(["xdg-open", PATH_TEX.with_suffix(".pdf")])
+        sys.exit(f"Output PDF not found at {PATH_PDF}")
 
 
 def parse_args(args=None) -> argparse.ArgumentParser.parse_args:
