@@ -136,4 +136,5 @@ options:
   -a, --add-suffixes    interactively add suffixes to sample names
   -s INT, --skip INT    number of stickers to skip (default: 0)
   -d STR, --date STR    "today", "none", or a custom date string(default: "today")
+  -n,, --no-open        do not open resulting PDF
 ```
