@@ -1,5 +1,7 @@
 # Changelog
 
+## v3.0.1
+
 ## v3.0.0
 
 - Convert generateStickers into the `generate-labels` package
