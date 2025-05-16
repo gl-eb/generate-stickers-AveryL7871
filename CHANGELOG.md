@@ -1,6 +1,6 @@
 # Changelog
 
-## development version
+## v3.0.0
 
 - Convert generateStickers into the `generate-labels` package
 - Add `-n` / `--no-open` flag to prevent the resulting PDF being opened
