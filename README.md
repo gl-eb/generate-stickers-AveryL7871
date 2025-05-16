@@ -14,7 +14,7 @@ The package is based on a python script (v2) which in turn was conceptually base
   - If you are not using TeX Live, make sure you have the required packages installed using the following command
 
     ```bash
-    tlmgr install booktabs cm-unicode fontspec moresize
+    tlmgr install booktabs cm-unicode fontspec moresize oberdiek setspace tools
     ```
 
 - You will need a **plain text file** (with the `.txt` suffix), ideally UTF-8 encoded, containing one sample name per line.
