@@ -1,0 +1,39 @@
+% disable command line output
+\batchmode
+
+\documentclass[a4paper]{article}
+% set document margins
+\usepackage[top=1.2cm, bottom=1.2cm, left=0.5cm, right=0.5cm]{geometry}
+% tables with columns of a defined width
+\usepackage{tabularx}
+% set vertical spacing of tables
+\usepackage{tabularht}
+% table formatting
+\usepackage{booktabs}
+% more font sizes
+\usepackage{moresize}
+% use OpenType fonts
+\usepackage{fontspec}
+% easy line spacing modification
+\usepackage{setspace}
+
+% font with more glyphs
+\setmainfont{cmunsx.otf}
+
+\setstretch{0.95}
+
+% no page numbers
+\pagestyle{empty}
+
+% set paragraph indent to zero
+\setlength{\parindent}{0pt}
+
+% defines custom column type for table
+\newcolumntype{Y}{>{\centering\arraybackslash}X}
+
+\begin{document}
+
+% set default font size
+\footnotesize
+
+%--------------------------------------------------------------------------

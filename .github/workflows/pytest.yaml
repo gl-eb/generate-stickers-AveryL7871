@@ -1,0 +1,82 @@
+name: Run Unit Tests
+
+on:
+  push:
+    branches: [ci]
+    paths: ["**.py", "**.yaml"]
+  pull_request:
+    paths: ["**.py", "**.yaml"]
+
+jobs:
+  test-python:
+    name: Test generate-labels
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.13"]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v5
+      with:
+        version: "0.7.4"
+        python-version: ${{ matrix.python-version }}
+        enable-cache: true
+        cache-dependency-glob: "uv.lock"
+
+    - name: Install Python dependencies
+      run: uv sync --locked --all-extras --dev
+
+    - name: Install TinyTex
+      uses: r-lib/actions/setup-tinytex@v2
+
+    - name: Install additional TeX packages
+      run: |
+        tlmgr update --self
+        tlmgr install booktabs cm-unicode fontspec moresize oberdiek setspace tools
+
+    - name: Run tests
+      run: uv run pytest tests
+
+  test-platforms:
+    name: Test generate-labels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version-file: ".python-version"
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v5
+      with:
+        version: "0.7.4"
+        enable-cache: true
+        cache-dependency-glob: "uv.lock"
+
+    - name: Install Python dependencies
+      run: uv sync --locked --all-extras --dev
+
+    - name: Install TinyTex
+      uses: r-lib/actions/setup-tinytex@v2
+
+    - name: Install additional TeX packages
+      run: |
+        tlmgr update --self
+        tlmgr install booktabs cm-unicode fontspec moresize oberdiek setspace tools
+
+    - name: Run tests
+      run: uv run pytest tests
