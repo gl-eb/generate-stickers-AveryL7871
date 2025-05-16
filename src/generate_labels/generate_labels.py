@@ -22,7 +22,7 @@ from platform import system
 from colorama import just_fix_windows_console
 
 
-def main():
+def main(args=None) -> None:
     """Generate printable label layout"""
 
     class color:
@@ -54,46 +54,7 @@ def main():
 
     ### Parse command line arguments ######################################
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "-i",
-        "--interactive",
-        help="run generate-labels in interactive mode, requiring user input for "
-        "any unset arguments",
-        action="store_true",
-    )
-    parser.add_argument(
-        "-f",
-        "--input-file",
-        metavar="FILE",
-        help="path to the text file containing one sample name per line",
-    )
-    parser.add_argument(
-        "-o",
-        "--output-file",
-        metavar="FILE",
-        help="name of or path to the output file (default: same as input file)",
-    )
-    parser.add_argument(
-        "-a",
-        "--add-suffixes",
-        help="interactively add suffixes to sample names",
-        action="store_true",
-    )
-    parser.add_argument(
-        "-s",
-        "--skip",
-        type=int,
-        metavar="INT",
-        help="number of stickers to skip (default: 0)",
-    )
-    parser.add_argument(
-        "-d",
-        "--date",
-        metavar="STR",
-        help='"today", "none", or a custom date string (default: "today")',
-    )
-    args = parser.parse_args()
+    args = parse_args(args)
 
     # Print warning about command-line arguments if none are set
     if args.input_file is None and not args.interactive:
@@ -456,6 +417,64 @@ def main():
         subprocess.run(["xdg-open", PATH_TEX.with_suffix(".pdf")])
 
 
+def parse_args(args=None) -> argparse.ArgumentParser.parse_args:
+    """
+    Function to parse command line arguments
+
+    Parameters
+    ----------
+    args: list
+        List of strings to parse
+
+    Returns
+    -------
+    parsed_args
+        Parsed arguments
+    """
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-i",
+        "--interactive",
+        help="run generate-labels in interactive mode, requiring user input for "
+        "any unset arguments",
+        action="store_true",
+    )
+    parser.add_argument(
+        "-f",
+        "--input-file",
+        metavar="FILE",
+        help="path to the text file containing one sample name per line",
+    )
+    parser.add_argument(
+        "-o",
+        "--output-file",
+        metavar="FILE",
+        help="name of or path to the output file (default: same as input file)",
+    )
+    parser.add_argument(
+        "-a",
+        "--add-suffixes",
+        help="interactively add suffixes to sample names",
+        action="store_true",
+    )
+    parser.add_argument(
+        "-s",
+        "--skip",
+        type=int,
+        metavar="INT",
+        help="number of stickers to skip (default: 0)",
+    )
+    parser.add_argument(
+        "-d",
+        "--date",
+        metavar="STR",
+        help='"today", "none", or a custom date string (default: "today")',
+    )
+
+    return parser.parse_args(args)
+
+
 def _return_sticker(x: int, names_list: list, str_date: str) -> str:
     """
     Return sticker content
@@ -607,3 +626,7 @@ def _str_width(string: str, size: int = 10) -> float:
     width = sum(WIDTH_DICT.get(s, AVERAGE_WIDTH) for s in string) * (size / 100)
 
     return round(width)
+
+
+if __name__ == "__main__":
+    main()
