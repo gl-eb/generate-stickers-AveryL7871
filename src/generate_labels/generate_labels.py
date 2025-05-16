@@ -408,6 +408,10 @@ def main(args=None) -> None:
         stdout=subprocess.DEVNULL,
     )
 
+    # Do not open resulting PDF if flag is set
+    if args.no_open:
+        return
+
     # Open resulting PDF in an OS-dependent manner
     if system() == "Darwin":
         subprocess.run(["open", PATH_TEX.with_suffix(".pdf")])
@@ -470,6 +474,9 @@ def parse_args(args=None) -> argparse.ArgumentParser.parse_args:
         "--date",
         metavar="STR",
         help='"today", "none", or a custom date string (default: "today")',
+    )
+    parser.add_argument(
+        "-n,", "--no-open", help="do not open resulting PDF", action="store_true"
     )
 
     return parser.parse_args(args)
