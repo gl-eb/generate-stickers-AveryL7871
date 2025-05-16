@@ -3,6 +3,7 @@
 ## development version
 
 - Convert generateStickers into the `generate-labels` package
+- Add `-n` / `--no-open` flag to prevent the resulting PDF being opened
 - Typography
   - Change font to Computer Modern Unicode Sans Serif Bold to increase the number of available glyphs
   - Increase font size and adapt spacing to accomodate increased line height
@@ -13,6 +14,7 @@
   - Work with absolute paths internally
 - Merge `before_body.tex` into `preamble.tex`
 - Use astral-sh/ruff-action@v3 action to run `ruff check`
+- Implement some unit testing
 - Refactor code and improve documentation
 
 ## v2.6.0
