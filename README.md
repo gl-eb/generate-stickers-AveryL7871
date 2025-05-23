@@ -1,4 +1,4 @@
-# Generate Avery L7871 Labels
+# Generate Avery L7871 Labels <img src="doc/logo.svg" align="right" height="139" alt="generate-labels logo" />
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.14288387.svg)](https://doi.org/10.5281/zenodo.14288387)
 
