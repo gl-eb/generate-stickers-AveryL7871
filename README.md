@@ -1,4 +1,4 @@
-# Generate Avery L7871 Labels
+# Generate Avery L7871 Labels <img src="doc/logo.svg" align="right" height="139" alt="generate-labels logo" />
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.14288387.svg)](https://doi.org/10.5281/zenodo.14288387)
 
@@ -136,4 +136,5 @@ options:
   -a, --add-suffixes    interactively add suffixes to sample names
   -s INT, --skip INT    number of stickers to skip (default: 0)
   -d STR, --date STR    "today", "none", or a custom date string(default: "today")
+  -n,, --no-open        do not open resulting PDF
 ```
