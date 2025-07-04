@@ -17,8 +17,8 @@ dependencies = [
 generate-labels = "generate_labels.generate_labels:main"
 
 [build-system]
-requires = ["setuptools>=78", "setuptools-scm>=8"]
-build-backend = "setuptools.build_meta"
+requires = ["uv_build>=0.7.19,<0.8.0"]
+build-backend = "uv_build"
 
 [dependency-groups]
 dev = [

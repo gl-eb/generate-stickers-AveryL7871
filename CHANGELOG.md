@@ -1,5 +1,9 @@
 # Changelog
 
+## Development version
+
+- Use UV build backend
+
 ## v3.0.0
 
 - Convert generateStickers into the `generate-labels` package
